@@ -18,3 +18,14 @@ SampleMvcApp/appsettings.json
 SampleMvcApp/project.lock.json
 
 ClubContestMvcApp/project\.lock\.json
+
+ClubContestMvcApp/appsettings\.development\.json
+
+ClubContestMvcApp/appsettings\.json
+ClubContestMvcApp/Properties/PublishProfiles/tellingme - Web Deploy.pubxml
+ClubContestMvcApp/Properties/PublishProfiles/tellingme - Web Deploy-publish.ps1
+ClubContestMvcApp/Properties/PublishProfiles/publish-module.psm1
+ClubContestMvcApp/wwwroot/js/
+ClubContestMvcApp/bin/Debug/netcoreapp1.0/ClubContestMvcApp.deps.json
+ClubContestMvcApp/bin/
+ClubContestMvcApp/obj/
