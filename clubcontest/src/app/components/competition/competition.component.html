@@ -1,0 +1,51 @@
+<div class="header">
+  <div class="app-menu">
+
+    <div class="title" style="font-size: 30px;">
+      <a href="./Competition/New" class="home">
+        <i class="material-icons" style="font-size: 19px; margin-right: 6px;">home</i>       
+      </a>
+    </div>
+
+    <div class="title" (click)="showCompetitionSettings()" *ngIf="userService.currentUser.isAdmin">
+      <i class="material-icons" style="font-size: 19px; margin-right: 6px;">settings</i>   
+    </div>
+
+    <div class="user" [mdMenuTriggerFor]="menu">   
+      
+        <i class="material-icons" style="font-size: 19px; margin-right: 6px;">account_circle</i>   
+        <span >{{userService.currentUser.Name}}</span>
+        <md-menu #menu="mdMenu">
+            <button *ngIf="userService.currentUser.isLoggedIn" md-menu-item (click)="showProfile()">Mein Konto</button>
+            <button *ngIf="userService.currentUser.isLoggedIn" md-menu-item (click)="logout()">abmelden</button>
+            <button *ngIf="!userService.currentUser.isLoggedIn" md-menu-item (click)="login()">anmelden</button>
+        </md-menu>
+
+      </div>
+
+
+  </div>
+
+  <div style="display: flex; overflow: auto;">
+  <div style="white-space: nowrap; padding: 0 5px;" (click)="showTotalResult()" >
+      <a class="tab" [class.active]="showTotals">
+        Gesamtwertung
+        </a>
+    </div>
+
+  <div (click)="createNewDay()" class="add-day-button" *ngIf="userService.currentUser.isAdmin">
+      <a  class="tab" ><md-icon>add</md-icon></a>
+      
+    </div>
+
+    <div *ngFor="let day of competition?.Days.reverse()" style="white-space: nowrap; padding: 0 5px;" (click)="selectDay(day.Id)">
+      <a [class.active]="day.Id == selectedDayId" class="tab">
+        {{day.Date|date:'dd.MM'}}
+        </a>
+    </div>
+  </div>
+</div>
+
+<app-competition-day *ngIf="!showTotals && !showSettings" [dayId]="selectedDayId" (deleted)="onDayDeleted()" ></app-competition-day>
+<app-total-result *ngIf="showTotals" [competition]="competition"></app-total-result>
+<app-competition-settings *ngIf="showSettings"  [competition]="competition"></app-competition-settings>

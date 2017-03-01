@@ -1,0 +1,152 @@
+#mapid {
+     height: calc(100vh - 65px); 
+     
+     margin-top: 65px;
+     flex-grow: 100;
+     z-index: 98;
+
+}
+
+@media(max-width:420px){
+  #mapid {
+       display: none;
+  }
+}
+
+.invisible{
+    height: 0px;
+    overflow: hidden;
+}
+
+.sidebar{   
+    margin-top: 63px;   
+    background-color: #FFF;
+    height: calc(100vh - 68px);
+    left: 0px;
+    box-shadow: 0px 2px 9px 0px rgb(109, 109, 109);
+    padding:5px 0px 0 0px;   
+    flex-grow: 1;
+    z-index: 99;
+    overflow-y:auto;
+}
+
+@media(max-width:420px){
+  .sidebar {
+        width:419px;
+  }
+}
+
+.flight-list{
+    background-color: white;
+    padding: 5px 0px 20px 0px;
+    font-size: 12px;
+    font-family: sans-serif;
+    width: 100%;    
+    box-sizing: border-box;
+}
+
+h2{
+    color: #31a8ff;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+
+.table-header{
+display: flex;
+    color: #bdbdbd;
+    margin: 13px 0 8px 0;
+}
+
+form{
+    margin: 40px 0 0 0;
+}
+
+input[type=file]{
+    display: none;
+}
+
+.menu{
+    display: flex;    
+    justify-content: flex-end;
+    color:#cccccc;
+}
+
+
+.menu:hover{    
+    color:#000;
+}
+
+.flight-list-header{
+    padding: 0 18px;
+}
+
+.uploadSection{
+    padding: 0 33px;
+}
+
+.competition-day{
+    display: flex;
+    align-items: stretch;
+    height: 100vh
+}
+
+.skylines{
+       width: 120px;
+    height: 41px;
+    position: absolute;
+    z-index: 99999;
+    bottom: 10px;
+    left: 25px;
+    background-color: rgba(0, 0, 0, 0.84);
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    padding: 0 5px;
+    border-radius: 2px;
+    box-shadow: 0 0 3px 0 black;
+    text-decoration: none;
+}
+
+.skylines svg{
+    width: 45px;
+    height: 45px;
+}
+
+
+.skylines-description{
+       white-space: nowrap;
+    padding-right: 8px;
+    position: absolute;
+    top: -20px;
+    color: #000000;
+    text-shadow: 0 0 8px white;
+    background-color: rgba(255, 255, 255, 0.74);
+    padding: 0 6px;
+}
+
+.skylines-blue{
+    margin-left: 5px;
+   box-sizing:border-box;
+color:rgb(0, 142, 218);
+display:inline;
+font-family:Ubuntu, "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size:20px;
+font-weight:normal;
+line-height:18px;
+text-shadow:rgba(0, 0, 0, 0.247059) 0px -1px 0px;
+}
+
+.skylines-white{
+box-sizing:border-box;
+color:rgb(255, 255, 255);
+display:inline;
+font-family:Ubuntu, "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size:20px;
+font-weight:normal;
+line-height:18px;
+text-shadow:rgba(0, 0, 0, 0.247059) 0px -1px 0px;
+}

@@ -1,0 +1,55 @@
+﻿<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Clubcontest</title>
+	<base href="/">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/x-icon" href="favicon.ico">
+
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
+	<script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+	<script src="https://npmcdn.com/@@turf/turf@@3.5.1/turf.min.js"></script>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link href='https://fonts.googleapis.com/css?family=Love+Ya+Like+A+Sister' rel='stylesheet' type='text/css'>
+	<link href="~/css/site.css" rel="stylesheet"/>
+	<script src="~/lib/victor.min.js"></script>
+	<style>
+		body {
+			margin: 0;
+		}
+	</style>
+
+	<script>
+		window.userName = '@ViewBag.UserName';
+		window.userId = @ViewBag.UserId;
+	</script>
+</head>
+<body>
+
+<div class="top-bar">
+	<div class="top-bar-inner">
+		@if (User.Identity.IsAuthenticated)
+		{
+			<a asp-controller="Account" asp-action="Settings">@User.Identity.Name</a>
+			<a asp-controller="Account" asp-action="Logout">Logout</a>
+		}
+		else
+		{
+			<a asp-controller="Account" asp-action="Login">Login</a>
+		}
+	</div>
+</div>
+@RenderBody()
+	<script type="text/javascript" src="~/js/inline.bundle.js"></script>
+	<script type="text/javascript" src="~/js/styles.bundle.js"></script>
+	<script type="text/javascript" src="~/js/vendor.bundle.js"></script>
+	<script type="text/javascript" src="~/js/main.bundle.js"></script>
+</body>
+
+
+
+
+
+</html>

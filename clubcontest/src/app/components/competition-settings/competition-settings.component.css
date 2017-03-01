@@ -1,0 +1,71 @@
+#mapid {
+     height: calc(100vh - 65px); 
+     width: 100%; 
+     margin-top: 65px;}
+
+.invisible{
+    height: 0px;
+    overflow: hidden;
+}
+
+.sidebar{
+    position: fixed;
+    top: 63px;
+    z-index: 999;
+    background-color: #FFF;
+    height: calc(100vh - 68px);
+    left: 0px;
+    box-shadow: 0px 2px 9px 0px rgb(109, 109, 109);
+    padding:5px 15px 0 10px;
+}
+
+.flight-list{
+    background-color: white;
+    padding: 5px 20px 20px 20px;
+    font-size: 12px;
+    font-family: sans-serif;
+    width: 100%;    
+    box-sizing: border-box;
+}
+
+h2{
+    color: #31a8ff;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+
+.table-header{
+display: flex;
+    color: #bdbdbd;
+    margin: 13px 0 8px 0;
+}
+
+form{
+    margin: 40px 0 0 0;
+}
+
+input[type=file]{
+    display: none;
+}
+
+.menu{
+    display: flex;    
+    justify-content: flex-end;
+    color:#cccccc;
+}
+
+
+.menu:hover{    
+    color:#000;
+}
+
+.main{
+    padding: 70px 40px;
+    font-family: verdana;
+    font-size: 14px;
+}
+
+.main textarea{
+    width:100%;
+}

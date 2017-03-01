@@ -1,0 +1,13 @@
+ <div class="task-point">
+  <span *ngIf="point.Type == 'Start'" >Start: {{point.Name}}</span>
+    <span *ngIf="point.Type != 'Start' && point.Type != 'Finish'" >WP{{i}}: {{point.Name}}</span>
+    <span *ngIf="point.Type == 'Finish'">Ziel: {{point.Name}}</span>
+
+     <div class="coordinates">
+      {{point.Latitude|coord:'N'}} - {{point.Longitude|coord:'E'}}
+      <span *ngIf="point.ObservationZone">({{point.ObservationZone.Type}} {{(point.ObservationZone.Length || point.ObservationZone.Radius) / 1000}}km)</span>
+      <br>
+      <br>
+    </div>
+ </div>
+ 

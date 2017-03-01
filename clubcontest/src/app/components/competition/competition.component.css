@@ -1,0 +1,91 @@
+a.tab{
+  
+    text-decoration: none;
+    color: #b1b1b1;
+    font-family: sans-serif;
+    font-size: 15px;
+    padding: 5px;
+    display: block;
+    font-weight: bolder;
+    cursor: pointer;
+    border-bottom: 3px solid white;
+}
+a.tab.active{
+    border-bottom: 3px solid #31a8ff;
+    color: #31a8ff;
+}
+
+a.tab:hover{
+    border-bottom: 3px solid #84cbff;
+    color: #84cbff;    
+}
+
+a.home{
+    color:gray;
+}
+
+a.home:hover{
+        border:none;
+        color:#31a8ff;
+}
+
+.header{
+  
+      box-shadow: 0 1px 6px 1px rgba(0, 0, 0, 0.47);
+    margin-bottom: -3px;
+    position: fixed;
+    background-color: white;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    font-family: sans-serif;
+}
+.title{
+        padding: 0px 10px 0px 6px;
+    font-size: 15px;
+    color: gray;
+        display: flex;
+    align-items: center;
+        display: flex; 
+    align-items: center;
+    cursor: pointer;
+}
+
+.title:hover{
+    color:#31a8ff;
+}
+
+.add-day-button{
+        margin: 1px 15px -2px 15px;
+        cursor: pointer;
+            overflow: hidden;
+}
+
+.add-day-button:hover a{
+        color:black;    
+        border-bottom: 3px solid #fff;    
+}
+
+.add-day-button a {
+    padding: 0;
+}
+
+.app-menu{
+        display: flex;
+    justify-content: flex-end;
+
+}
+
+.user{
+    cursor:pointer;
+    padding: 0px 10px 0 5px;
+    color: gray;  
+    font-size: 15px;
+    margin: 0px 10px 0 0;
+        display: flex;
+    align-items: center;
+   
+}
+.user:hover{
+   color:#31a8ff;
+}

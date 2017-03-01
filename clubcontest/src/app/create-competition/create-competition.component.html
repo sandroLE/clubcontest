@@ -1,0 +1,29 @@
+<div class="create-competition">
+  <div  class="heading">
+    <span >clubcontest</span>
+  </div>
+  <div class="search">
+    <input class="" type="text" (keyup)="nameChanged($event.target.value)" placeholder="Wettbewerb suchen" [(ngModel)]="name"  />
+  </div>
+
+  <div class="all ">
+      <div *ngIf="filtered.length > 0">Wähle einen Wettbewerb aus, an dem du teilnehmen möchtest!<br><br></div>
+      <div class="link" *ngFor="let c of filtered" (click)="open(c.Name)">{{c.Name}}</div>
+  </div>
+
+
+
+  <div *ngIf="filtered.length == 0" class="create">
+    
+    <div>Es scheint keinen Wettbewerb mit diesem Namen zu geben.</div>
+    <div *ngIf="name.length > 3" class="create">
+      
+      <div><br><br><br>Möchtest du deinen eigenen Wettbewerb mit diesem Namen erstellen? </div>
+      <div class="create-button">           
+        <button md-raised-button color="accent" (click)="create()" [disabled]="isButtonDisabled">Ja - Wettbewerb "{{name}}" erstellen</button>   
+      </div>
+      <div class="invalid-name" *ngIf="name?.length > 3 && isButtonDisabled">Verwende ausschließlich Buchstaben oder Zahlen, jedoch keine Leerzeichen, Bindestriche oder andere Sonderzeichen. </div>
+    </div>
+  </div>
+
+</div>

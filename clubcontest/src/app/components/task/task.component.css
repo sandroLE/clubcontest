@@ -1,0 +1,55 @@
+.task
+{
+  background-color: #f1f1f1;
+    padding: 5px 15px 10px 20px;
+    font-size: 12px;
+    font-family: sans-serif;    
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid white;
+}
+
+.task:hover{
+    
+    border: 1px solid whitesmoke;
+}
+
+.taskpoint{
+   
+}
+
+.coordinates{
+    font-size: 10px;
+    color: gray;
+}
+
+h2{
+    color: #31a8ff;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.upload{
+    margin: 10px 10px 0 10px;
+}
+
+.link{
+        font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer;
+    color: #0064ff;
+}
+.expand-button{
+    padding:10px;
+    cursor:pointer;
+}
+
+input[type=file]{
+    display: none;
+}
+
+.buttons{
+    display: flex;
+    align-items: baseline;
+    justify-content:  flex-start;
+}

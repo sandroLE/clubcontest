@@ -1,0 +1,92 @@
+<div class="task">
+
+<div style="display: flex; justify-content: space-between" *ngIf="task?.TaskPoints.length > 0" (click)="collapsed=!collapsed;">
+  <h2>{{title}}</h2>
+  <div class="expand-button" >
+    <i *ngIf="collapsed" class="material-icons">expand_more</i>
+    <i *ngIf="!collapsed" class="material-icons">expand_less</i>
+  </div>
+</div>
+
+<div *ngIf="!collapsed">
+
+  <div *ngIf="isEditorEnabled">
+  <br>
+  <br>
+  <br>
+
+    <md-select *ngIf="task"  placeholder="Aufgabentype" [(ngModel)]="task.Type" (onClose)="taskTypeChanged()">
+      <md-option [value]="'AAT'">AAT</md-option>
+      <md-option [value]="'RT'">Racing</md-option>
+    </md-select>
+
+  <br>
+  <br>
+  <br>
+
+      <md-select *ngIf="task && task.Type == 'AAT'"  placeholder="Mindestaufgabenzeit" [(ngModel)]="task.AatMinTime" (onClose)="taskPropertyChanged()">
+      <md-option [value]="3600">01:00</md-option>      
+      <md-option [value]="4500">01:15</md-option>      
+      <md-option [value]="5400">01:30</md-option>      
+      <md-option [value]="6300">01:45</md-option>      
+      <md-option [value]="7200">02:00</md-option>      
+      <md-option [value]="8100">02:15</md-option>      
+      <md-option [value]="9000">02:30</md-option>      
+      <md-option [value]="9900">02:45</md-option>      
+      <md-option [value]="10800">03:00</md-option>      
+      <md-option [value]="11700">03:15</md-option>      
+      <md-option [value]="12600">03:30</md-option>      
+      <md-option [value]="13500">03:45</md-option>      
+      <md-option [value]="14400">04:00</md-option>      
+      <md-option [value]="15300">04:15</md-option>      
+      <md-option [value]="16200">04:30</md-option>      
+      <md-option [value]="17100">04:45</md-option>      
+      <md-option [value]="18000">05:00</md-option>      
+      <md-option [value]="18900">05:15</md-option>      
+      <md-option [value]="19800">05:30</md-option>      
+      <md-option [value]="20700">05:45</md-option>      
+      <md-option [value]="21600">06:00</md-option>      
+      <md-option [value]="22500">06:15</md-option>      
+      <md-option [value]="23400">06:30</md-option>      
+      <md-option [value]="24300">06:45</md-option>      
+    </md-select>
+  <br>
+  <br>
+  <br>
+</div>
+
+  <task-point *ngFor="let p of task?.TaskPoints" [point]="p"></task-point>
+
+  <div *ngIf="!task?.TaskPoints.length > 0">
+    <div *ngIf="userService.currentUser.isAdmin">
+      <br><br>
+      <br> Neue Aufgaben kannst du z.B. mit dem großartigen Tool <a class="link" href="http://prosoar.de/" target="_blank">http://prosoar.de</a> von Tobias Lohner erstellen.
+      <br><br>
+    </div>
+    <div *ngIf="!userService.currentUser.isAdmin">Um eine neue Aufgabe zu erstellen, musst du als Administrator angemeldet sein.</div>
+  </div>
+
+
+  <div class="buttons" style="display: flex;" *ngIf="!isEditorEnabled">
+    
+    <button *ngIf="task?.TaskPoints.length > 0" md-raised-button   (click)="enableEditMode()"> <i class="material-icons">edit</i> bearbeiten</button>
+
+    <div class="upload" *ngIf="userService.currentUser.isAdmin">
+      <form>
+        <input type="file" #file (change) = "uploadTask(file.files)" accept=".tsk">
+          <button *ngIf="!task?.TaskPoints.length > 0" md-raised-button color="accent" (click)="file.click()">Aufgabe hochladen</button>          
+      </form>
+    </div>
+  
+    <a *ngIf="task?.TaskPoints.length > 0 && !isEditorEnabled" md-raised-button  [href]="'Day/DownloadTask?dayId=' + dayId" style="height: 36px">
+    <i class="material-icons">file_download</i>
+      download
+    </a>
+  </div>
+
+  <div class="buttons" style="display: flex;" *ngIf="isEditorEnabled">
+    <button md-raised-button (click)="cancel()" style="margin-right: 5px">Abbrechen</button>    
+    <button md-raised-button  color="accent" (click)="save()"><i class="material-icons">save</i> Speichern</button>        
+  </div>
+</div>
+</div>

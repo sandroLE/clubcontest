@@ -1,0 +1,11 @@
+<div class="main">
+
+  <div>
+    <h3>Wettbewerbsleiter</h3>
+    Füge weitere Benutzer hinzu, die in deinem Namen neue Wettbewerbstage erstellen/löschen dürfen. Außerdem dürfen diese Benutzer die Flüge anderer Benutzer bearbeiten/löschen.
+    <br><br>
+    <textarea cols="25" rows="7"  [(ngModel)]="competition.AdminUsers" placeholder="E-Mailadressen der Benutzer (durch Komma getrennt)"></textarea>
+  </div>
+  <button md-raised-button color="accent" (click)="save()" *ngIf="userService.currentUser.isAdmin">Speichern</button>
+  
+</div>

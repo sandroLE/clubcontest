@@ -1,0 +1,49 @@
+﻿
+
+.top-bar {
+	position: relative;
+}
+
+.top-bar-inner {
+	position: absolute;
+	    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.top-bar a {
+	    color: white;
+    font-family: verdana;
+    font-size: 13px;
+	margin: 5px 10px;
+	text-decoration: none;
+}
+
+.footer {
+	    width: 100%;
+    text-align: center;
+    background-color: white;
+    position: fixed;
+    bottom: 0;
+    padding: 5px;
+    border-top: 1px solid #d4d4d4;
+    font-size: 12px;
+    font-family: verdana;
+    color: gray;
+}
+
+
+	.heading{
+    font-family: 'Love Ya Like A Sister', cursive;
+    text-align: center;
+    font-size: 45px;
+    color: white;
+    padding: 50px 0;
+    background-color: #889eff;
+    box-shadow: 0 0 4px 1px #737373;
+}
+
+	body {
+		margin: 0;
+		font-family: verdana;
+	}

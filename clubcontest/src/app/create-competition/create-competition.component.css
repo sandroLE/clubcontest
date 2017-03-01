@@ -1,0 +1,73 @@
+.create-competition
+{
+ font-family: sans-serif;
+    color: #636363;
+}
+.search{
+        margin-top: 50px;
+    display: flex;
+    justify-content: center;
+    padding: 5px;
+}
+
+.search input{
+        border: none;
+    box-shadow: 0 0px 6px 0px #c5c5c5;
+    padding: 12px;
+    border-radius: 2px;
+    font-size: 15px;
+    outline:none;
+}
+
+.search input:hover, .search input:focus{
+       box-shadow:0 0px 6px 0px #949494;
+
+}
+
+.create-button{
+    margin: 20px 0;
+       display: flex;
+    justify-content: center;
+}
+
+.all{
+    margin: 50px 0 0 0;
+        display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.create{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+   
+}
+
+.invalid-name{
+    font-size: 12px;
+    color: #d80000;
+}
+
+.link{
+    padding:4px;
+    cursor:pointer;
+    color: #889eff;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.link:hover{   
+    text-decoration: underline;
+}
+
+.heading{
+    font-family: 'Love Ya Like A Sister', cursive;
+    text-align: center;
+    font-size: 45px;
+    color: white;
+    padding: 50px 0;
+    background-color: #889eff;
+    box-shadow: 0 0 4px 1px #737373;
+}

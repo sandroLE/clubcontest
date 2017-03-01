@@ -1,0 +1,57 @@
+<div class="flight" [class.selected]="selected" [class.expanded]="isExpanded">
+	<div class="headline" (click)="onClick()">
+		<div class="scores">{{flight.Score}} </div>
+		<div class="flightInfo" >
+			{{flight.User.Name}}
+
+			<div class="details">
+				<div class="detail"> {{flight.Distance | rnd}} km </div>
+				<div class="detail">{{flight.Duration|timespanString}} Std </div>
+				<div class="detail">{{flight.Speed|rnd}} km/h</div>
+				<div class="detail">{{flight.Speed / flight.Handicap |rnd}} km/h</div>
+			</div>
+			<div class="details">
+				<div class="detail"> {{flight.GliderType}} ({{flight.Handicap | rnd}})</div>
+			</div>
+
+
+		</div>
+
+		<div class="more" *ngIf="flight.UserId == userService.currentUser.Id || userService.currentUser.isAdmin">
+			<button md-icon-button (click)="toggleExpand($event)">
+				<md-icon *ngIf="!isExpanded">expand_more</md-icon>
+				<md-icon *ngIf="isExpanded">expand_less</md-icon>
+			</button>
+		</div>
+	</div>
+	<div *ngIf="isExpanded" class="expand-area">
+
+		<div *ngFor="let tp of turnpoints, let i=index" class="turnpoint">
+			<div *ngIf="tp != null">{{tp?.Time | date:'hh:mm:ss'}} {{tp?.Latitude|coord:'N' }}, {{ tp?.Longitude|coord:'E'}} </div>
+			<div *ngIf="tp == null">nicht erreicht</div>
+
+			<div class="pin-button" (click)="editTurnpointLocation(i)"> <md-icon class="md-24">edit_location</md-icon></div>
+		</div>
+		<br><br>
+		<md-select [(ngModel)]="selectedGlider" placeholder="Flugzeug" style="width:100%">
+			<md-option *ngFor="let type of gliderTypes" [value]="type.name">{{type.name}}</md-option>
+		</md-select>
+		<div class="button-footer">
+			<button md-icon-button (click)="onDeleteButtonClicked()">
+				<md-icon class="md-24">delete</md-icon>
+			</button>
+
+			<button md-icon-button (click)="recalculate()">
+				<md-icon class="md-24">refresh</md-icon>
+			</button>
+			<button md-icon-button (click)="save()">
+				<md-icon class="md-24">done</md-icon>
+			</button>
+		</div>
+
+	
+	</div>
+  	<div class="progressbar" *ngIf="isLoading">
+			<md-progress-bar mode="indeterminate" color="accent"></md-progress-bar>
+		</div>
+</div>

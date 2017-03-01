@@ -1,0 +1,25 @@
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<div *ngIf="totals.length == 0" class="no-results">
+  Es wurden noch keine Flüge zur Wertung eingereicht.
+</div>
+
+<table *ngIf="totals.length > 0">
+  <tr>
+    <th>Punkte</th>
+    <th>Name</th>
+    <th *ngFor="let d of totals[0].days"> {{d.day.Date | date: 'dd.MM.' }} </th>
+  </tr>
+
+  <tr *ngFor="let result of totals">
+    <td>{{result.total}}</td>
+    <td>{{result.user.Name}}</td>
+    <td *ngFor="let day of result.days"> {{day.score}} </td>
+  </tr>
+</table>

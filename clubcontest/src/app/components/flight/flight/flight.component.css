@@ -1,0 +1,73 @@
+.headline{
+    display: flex; 
+    justify-content: space-between;
+    font-size: 16px;  
+    color: #1d1d1d;
+    padding-right: 0px;  
+}
+
+
+
+
+.flight{
+  border-top: 1px solid #eaeaea;
+  border-left: 5px solid #FFF;
+}
+
+.flight:hover, .flight.selected{
+    background-color: whitesmoke;
+    border-left: 5px solid #3388ff;
+}
+
+.flight.expanded.selected, 
+.flight.expanded:hover{
+    background-color:rgb(231, 241, 255);
+}
+
+.details{
+        display: flex;
+    padding:4px 0px 0 0;
+   
+    color: #adadad;
+        font-size: 12px;
+}
+
+.detail{
+        margin: 0 25px 0 0;
+}
+.scores{
+        padding: 8px 15px;
+}
+
+.expand-area{
+    width: 100%;      
+    padding: 45px 44px 13px 72px;    
+    box-sizing: border-box;
+    font-size: 15px;
+}
+
+.button-footer{
+    display: flex;    
+    justify-content: flex-end;
+    color: #737373;
+        margin-top: 15px;
+}
+
+.turnpoint{
+    display: flex;
+    font-size: 13px;
+    padding: 5px;
+    align-items: center;
+}
+.pin-button{
+    cursor: pointer;
+    color:gray;    
+}
+.pin-button:hover{
+    color:black;
+}
+
+.flightInfo{
+     padding: 6px 4px;
+flex-grow: 1
+}
