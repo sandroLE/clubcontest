@@ -3,6 +3,8 @@ import { ITask } from './../models/task';
 import { Http } from '@angular/http';
 import { Injectable } from '@angular/core';
 
+declare var turf;
+
 @Injectable()
 export class GeoUtilService {
 

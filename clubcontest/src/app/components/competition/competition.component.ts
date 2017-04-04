@@ -12,17 +12,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CompetitionComponent implements OnInit {
 
-  private competition: ICompetition = null;
-  private selectedDayId = 0;
-  private showTotals = false;
-  private showSettings = false;
+  public competition: ICompetition = null;
+  public selectedDayId = 0;
+  public showTotals = false;
+  public showSettings = false;
 
   private userName = "";
   constructor(
     private http: Http
     , private router: Router
     , private route: ActivatedRoute
-    , private userService : UserService
+    , public userService : UserService
     , private apiServie:ApiService) {
 
   }
@@ -85,30 +85,30 @@ export class CompetitionComponent implements OnInit {
       });
   }
 
-  private selectDay(id: number) {
+  public selectDay(id: number) {
     this.router.navigate(["Competition/", this.competition.Name, id]);
   }
 
-  private showTotalResult() {
+  public showTotalResult() {
     this.router.navigate(["Competition/", this.competition.Name, "total"]);
   }
 
-  private onDayDeleted(){
+  public onDayDeleted(){
     this.router.navigate(["Competition/", this.competition.Name]);
   }
 
-  private login(){
+  public login(){
     window.location.href  ="./Account/Login";
   }
 
-  private logout(){
+  public logout(){
     window.location.href  ="./Account/Logout";
   }
-  private showProfile(){    
+  public showProfile(){    
      this.router.navigate(["Account/Settings"]);
   }
 
-  private showCompetitionSettings(){
+  public showCompetitionSettings(){
       this.router.navigate(["Competition/", this.competition.Name, "settings"]);
   }
 }

@@ -38,7 +38,7 @@
       
     </div>
 
-    <div *ngFor="let day of competition?.Days.reverse()" style="white-space: nowrap; padding: 0 5px;" (click)="selectDay(day.Id)">
+    <div *ngFor="let day of competition?.Days" style="white-space: nowrap; padding: 0 5px;" (click)="selectDay(day.Id)">
       <a [class.active]="day.Id == selectedDayId" class="tab">
         {{day.Date|date:'dd.MM'}}
         </a>

@@ -57,7 +57,7 @@
 
   <task-point *ngFor="let p of task?.TaskPoints" [point]="p"></task-point>
 
-  <div *ngIf="!task?.TaskPoints.length > 0">
+  <div *ngIf="task == null || task.TaskPoints.length == 0">
     <div *ngIf="userService.currentUser.isAdmin">
       <br><br>
       <br> Neue Aufgaben kannst du z.B. mit dem großartigen Tool <a class="link" href="http://prosoar.de/" target="_blank">http://prosoar.de</a> von Tobias Lohner erstellen.
@@ -69,16 +69,16 @@
 
   <div class="buttons" style="display: flex;" *ngIf="!isEditorEnabled">
     
-    <button *ngIf="task?.TaskPoints.length > 0 && userService.currentUser.isAdmin" md-raised-button   (click)="enableEditMode()" style="margin-right: 5px;"> <i class="material-icons">edit</i> bearbeiten</button>
+    <button *ngIf="task != null && task.TaskPoints.length > 0 && userService.currentUser.isAdmin" md-raised-button   (click)="enableEditMode()" style="margin-right: 5px;"> <i class="material-icons">edit</i> bearbeiten</button>
 
     <div class="upload" *ngIf="userService.currentUser.isAdmin">
       <form>
         <input type="file" #file (change) = "uploadTask(file.files)" accept=".tsk">
-          <button *ngIf="!task?.TaskPoints.length > 0" md-raised-button color="accent" (click)="file.click()">Aufgabe hochladen</button>          
+          <button *ngIf="task==null || task.TaskPoints.length == 0" md-raised-button color="accent" (click)="file.click()">Aufgabe hochladen</button>          
       </form>
     </div>
   
-    <a *ngIf="task?.TaskPoints.length > 0 && !isEditorEnabled" md-raised-button  [href]="'Day/DownloadTask?dayId=' + dayId" style="height: 36px">
+    <a *ngIf="task != null && task.TaskPoints.length > 0 && !isEditorEnabled" md-raised-button  [href]="'Day/DownloadTask?dayId=' + dayId" style="height: 36px">
     <i class="material-icons">file_download</i>
       download
     </a>

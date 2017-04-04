@@ -9,7 +9,7 @@ import { Component, OnInit, Input } from '@angular/core';
 export class TaskPointComponent implements OnInit {
 
   @Input() 
-  private point: ITaskPoint = null;
+  public point: ITaskPoint = null;
 
   constructor() { }
 

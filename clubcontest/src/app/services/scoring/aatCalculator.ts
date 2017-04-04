@@ -5,6 +5,8 @@ import { MapService } from './../map.service';
 import { ITask, ITaskPoint } from './../../models/task';
 import { IFlight, IFlightScoring, ILoggerPoint } from './../../models/flight';
 
+declare var turf;
+
 export class AatCalculator  extends TaskCalculator {
 
     constructor(mapService: MapService, geoUtil: GeoUtilService) {

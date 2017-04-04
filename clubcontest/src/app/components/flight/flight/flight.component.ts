@@ -28,8 +28,8 @@ export class FlightComponent {
   private collapse = new EventEmitter<void>();
 
   @Input()
-  private set isExpanded(value: boolean) { this._isExpanded = value; }
-  private get isExpanded() { return this._isExpanded; }
+  public set isExpanded(value: boolean) { this._isExpanded = value; }
+  public get isExpanded() { return this._isExpanded; }
 
   @Output()
   private delete = new EventEmitter<void>();
@@ -43,7 +43,7 @@ export class FlightComponent {
 
   @Input() task: ITask;
 
-  constructor(private geoUtil: GeoUtilService, private scoring: TaskScoringService, private map: MapService, private userService: UserService) {
+  constructor(private geoUtil: GeoUtilService, private scoring: TaskScoringService, private map: MapService, public userService: UserService) {
 
   }
 
@@ -76,7 +76,7 @@ export class FlightComponent {
     }
   }
 
-  private onClick() {
+  public onClick() {
     this.clicked.emit();
   }
 

@@ -27,7 +27,7 @@ export class CompetitionDayComponent {
   private loadingFlights: number[] = [];
   private expandedFlight: number = null;
 
-  private hasError = false;
+  public hasError = false;
   @Input() private dayId = 0;
   @Output() private deleted = new EventEmitter<void>();
 

@@ -1,5 +1,7 @@
 import { IUser } from './user';
 import { ILoggerPoint } from './flight';
+import 'leaflet';
+
 export interface IFlight {
     Id: number;
     DayId: number;

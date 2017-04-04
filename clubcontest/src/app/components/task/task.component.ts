@@ -26,8 +26,8 @@ export class TaskComponent {
 
 
   @Input()
-  private get task() { return this._task; }
-  private set task(value: ITask) {
+  public get task() { return this._task; }
+  public set task(value: ITask) {
     this._task = value;
     this.isEditorEnabled = false;
     this.taskBackup = null;

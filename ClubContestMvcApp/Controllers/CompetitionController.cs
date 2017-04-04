@@ -136,7 +136,7 @@ namespace SampleMvcApp.Controllers
 				.ThenInclude(x => x.User)
 				.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
 
-
+			data.Days = data.Days.OrderByDescending(x => x.Date).ToList();
 			return new JsonResult(data, serializerSettings);
 		}
 

@@ -21,10 +21,10 @@ import 'leaflet-geometryutil';
 })
 export class CompetitionSettingsComponent {
 
-  @Input() private competition: ICompetition = null;
+  @Input() public competition: ICompetition = null;
   private allowedUsers: "everyone" |"byMail" = "everyone" ;
 
-  constructor(private api:ApiService, private userService: UserService){
+  constructor(private api:ApiService, public userService: UserService){
 
   }
 
@@ -32,7 +32,7 @@ export class CompetitionSettingsComponent {
     this.allowedUsers = this.competition.AdminUsers === "" ? "everyone" : "byMail"
   }
 
-  private save(){
+  public save(){
      this.api.updateCompetition(this.competition).subscribe(x => {
        alert("Einstellungen wurden erfolgreich gespeichert");
      });

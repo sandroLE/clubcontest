@@ -23,7 +23,7 @@ export class CreateCompetitionComponent implements OnInit {
   }
 
   private all = [];
-  private filtered = [];
+  public filtered = [];
   constructor(private apiService: ApiService, private http: Http, private router: Router) { }
 
   ngOnInit() {

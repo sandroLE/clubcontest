@@ -12,7 +12,7 @@ import { Component, OnInit, Input, OnChanges } from '@angular/core';
 export class TotalResultComponent implements OnInit {
 
   @Input() competition: ICompetition;
-  private totals;
+  public totals;
 
   constructor(
     private scoring: TaskScoringService) {

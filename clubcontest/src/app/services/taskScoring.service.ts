@@ -9,7 +9,7 @@ import { Http } from '@angular/http';
 import { Injectable } from '@angular/core';
 
 
-var gju = require('geojson-utils');
+//var gju = require('geojson-utils');
 
 @Injectable()
 export class TaskScoringService {

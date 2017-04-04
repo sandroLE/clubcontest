@@ -3,6 +3,8 @@ import { MapService } from './../map.service';
 import { ITask } from './../../models/task';
 import { ILoggerPoint, IFlight, IFlightScoring } from './../../models/flight';
 
+declare var turf;
+
 export abstract class TaskCalculator {
 
 
