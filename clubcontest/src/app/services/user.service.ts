@@ -21,8 +21,8 @@ export class UserService {
   public currentUser:IUser = { 
     Id:0, 
     Name:"tester", 
-    isLoggedIn: true, 
-    isAdmin:true
+    isLoggedIn: false, 
+    isAdmin:false
   };
 
 }

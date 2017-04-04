@@ -69,7 +69,7 @@
 
   <div class="buttons" style="display: flex;" *ngIf="!isEditorEnabled">
     
-    <button *ngIf="task?.TaskPoints.length > 0" md-raised-button   (click)="enableEditMode()"> <i class="material-icons">edit</i> bearbeiten</button>
+    <button *ngIf="task?.TaskPoints.length > 0 && userService.currentUser.isAdmin" md-raised-button   (click)="enableEditMode()" style="margin-right: 5px;"> <i class="material-icons">edit</i> bearbeiten</button>
 
     <div class="upload" *ngIf="userService.currentUser.isAdmin">
       <form>
