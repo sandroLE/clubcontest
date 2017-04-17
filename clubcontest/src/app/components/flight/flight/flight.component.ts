@@ -109,7 +109,7 @@ export class FlightComponent {
   private recalculate() {
     var scoring = this.scoring.getFlightScoring(this.flight, this.task);
     console.log(scoring);
-    if (scoring) {
+    if (scoring && scoring.points.every(x => x != null)) {
       this.flight.Speed = scoring.speed;
       this.flight.Distance = scoring.totalDistance;
       this.flight.Finished = scoring.finished;
