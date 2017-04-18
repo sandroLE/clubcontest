@@ -1,3 +1,4 @@
+import { UserService } from './../services/user.service';
 import { CompetitionComponent } from './../components/competition/competition.component';
 import { ICompetition } from './../models/competition';
 import { Http, Headers, RequestOptions, Response } from '@angular/http';
@@ -12,6 +13,7 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 })
 export class CreateCompetitionComponent implements OnInit {
 
+
   private alreadyExists = false;
   private isButtonDisabled = true;
   public _name = "";
@@ -24,7 +26,9 @@ export class CreateCompetitionComponent implements OnInit {
 
   private all = [];
   public filtered = [];
-  constructor(private apiService: ApiService, private http: Http, private router: Router) { }
+  constructor(private apiService: ApiService, private http: Http, private router: Router, public userService:UserService) {
+    
+  }
 
   ngOnInit() {
     this.getAll();

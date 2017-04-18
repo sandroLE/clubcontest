@@ -71,3 +71,22 @@
     background-color: #889eff;
     box-shadow: 0 0 4px 1px #737373;
 }
+
+.top-bar {
+	position: relative;
+}
+
+.top-bar-inner {
+	position: absolute;
+	    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.top-bar a {
+	    color: white;
+    font-family: verdana;
+    font-size: 13px;
+	margin: 5px 10px;
+	text-decoration: none;
+}

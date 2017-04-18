@@ -1,1 +1,25 @@
-user profile
+
+<div class="userProfile">
+    <div class="top-bar">
+        <h1>Benutzerkonto</h1>
+    </div>
+
+<div class="form" >
+    <form name="myForm">
+    <div class="left">
+    <div><h3>Anzeigename</h3></div>
+    <div class="input">
+        <input  [(ngModel)]="userDisplayName" name="userDisplayName" type="text">
+    </div>
+    <div class="description">Dieser Name ist für jedermann öffentlich sichtbar.</div>
+    </div>    
+    </form>    
+
+  
+    <div class="button-bar">
+     <button md-raised-button (click)="saveSettings()" style="margin-right: 5px">OK</button>  
+    </div>
+</div>
+
+
+</div>

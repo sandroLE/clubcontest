@@ -4,3 +4,7 @@ export interface IUser{
     isLoggedIn:boolean;
     isAdmin:boolean;
 }
+
+export interface IUserSettings{
+    DisplayName:string;
+}

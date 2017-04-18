@@ -1,4 +1,6 @@
 ﻿using System.Security.Claims;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -10,184 +12,190 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.WebEncoders;
 using SampleMvcApp.Database;
 
 
 namespace SampleMvcApp
 {
-	public class Startup
-	{
-		public Startup(IHostingEnvironment env)
-		{
-			var builder = new ConfigurationBuilder()
-					.SetBasePath(env.ContentRootPath)
-					.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-					.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-					.AddEnvironmentVariables();
-			Configuration = builder.Build();
-		}
+    public class Startup
+    {
+        public Startup(IHostingEnvironment env)
+        {
+            var builder = new ConfigurationBuilder()
+                    .SetBasePath(env.ContentRootPath)
+                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                    .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                    .AddEnvironmentVariables();
+            Configuration = builder.Build();
+        }
 
-		public IConfigurationRoot Configuration { get; }
+        public IConfigurationRoot Configuration { get; }
 
-		// This method gets called by the runtime. Use this method to add services to the container.
-		public void ConfigureServices(IServiceCollection services)
-		{
-			// Add authentication services
-			services.AddAuthentication(
-					options => options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            // Add authentication services
+            services.AddAuthentication(
+                    options => options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
 
-			// Add framework services.
-			services.AddMvc();
+            // Add framework services.
+            services.AddMvc();
 
-			// Add functionality to inject IOptions<T>
-			services.AddOptions();
+            // Add functionality to inject IOptions<T>
+            services.AddOptions();
 
-			// Add the Auth0 Settings object so it can be injected
-			services.Configure<Auth0Settings>(Configuration.GetSection("Auth0"));
+            // Add the Auth0 Settings object so it can be injected
+            services.Configure<Auth0Settings>(Configuration.GetSection("Auth0"));
 
-			services.AddDbContext<DatabaseContext>(options =>
-				options.UseSqlServer(Configuration["Data:DatabaseConnection:ConnectionString"]));
+            services.AddDbContext<DatabaseContext>(options =>
+                options.UseSqlServer(Configuration["Data:DatabaseConnection:ConnectionString"]));
 
-			services
-					 .AddCors(options => {
-						 options.AddPolicy("AllowAll", builder => {
-							 builder
-.AllowAnyOrigin()
-.AllowAnyMethod()
-.AllowAnyHeader()
-.WithExposedHeaders("X-Auth-User", "X-Auth-Token", "X-HTTP-Method-Override");
-						 });
-					 })
-					 ;
-		}
+            services.AddCors(options =>
+                     {
+                         options.AddPolicy("AllowAll", builder =>
+                         {
+                             builder
+                             .AllowAnyOrigin()
+                             .AllowAnyMethod()
+                             .AllowAnyHeader()
+                             .WithExposedHeaders("X-Auth-User", "X-Auth-Token", "X-HTTP-Method-Override");
+                         });
+                     });
 
-		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<Auth0Settings> auth0Settings)
-		{
-			loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-			loggerFactory.AddDebug();
+            services.Configure<WebEncoderOptions>(options =>
+            {
+                options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All);
+            });
+        }
 
-			if (env.IsDevelopment())
-			{
-				app.UseDeveloperExceptionPage();
-				app.UseBrowserLink();
-			}
-			else
-			{
-				app.UseExceptionHandler("/Home/Error");
-			}
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<Auth0Settings> auth0Settings)
+        {
+            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            loggerFactory.AddDebug();
 
-			app.UseStaticFiles();
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseBrowserLink();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+            }
 
-			// Add the cookie middleware
-			app.UseCookieAuthentication(new CookieAuthenticationOptions
-			{
-				
-				AutomaticAuthenticate = true,
-				AutomaticChallenge = false,
-				LoginPath = new PathString("/Home/Index")
-		});
+            app.UseStaticFiles();
 
-			// Add the OIDC middleware
-			var options = new OpenIdConnectOptions("Auth0")
-			{
-				// Set the authority to your Auth0 domain
-				Authority = $"https://{auth0Settings.Value.Domain}",
+            // Add the cookie middleware
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
 
-				// Configure the Auth0 Client ID and Client Secret
-				ClientId = auth0Settings.Value.ClientId,
-				ClientSecret = auth0Settings.Value.ClientSecret,
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = false,
+                LoginPath = new PathString("/Home/Index")
+            });
 
-				// Do not automatically authenticate and challenge
-				AutomaticAuthenticate = false,
-				AutomaticChallenge = false,
+            // Add the OIDC middleware
+            var options = new OpenIdConnectOptions("Auth0")
+            {
+                // Set the authority to your Auth0 domain
+                Authority = $"https://{auth0Settings.Value.Domain}",
 
-				// Set response type to code
-				ResponseType = "code",
+                // Configure the Auth0 Client ID and Client Secret
+                ClientId = auth0Settings.Value.ClientId,
+                ClientSecret = auth0Settings.Value.ClientSecret,
 
-				// Set the callback path, so Auth0 will call back to http://localhost:5000/signin-auth0 
-				// Also ensure that you have added the URL as an Allowed Callback URL in your Auth0 dashboard 
-				CallbackPath = new PathString("/signin-auth0"),
+                // Do not automatically authenticate and challenge
+                AutomaticAuthenticate = false,
+                AutomaticChallenge = false,
 
-				// Configure the Claims Issuer to be Auth0
-				ClaimsIssuer = "Auth0",
+                // Set response type to code
+                ResponseType = "code",
 
-				// Saves tokens to the AuthenticationProperties
-				SaveTokens = true,
+                // Set the callback path, so Auth0 will call back to http://localhost:5000/signin-auth0 
+                // Also ensure that you have added the URL as an Allowed Callback URL in your Auth0 dashboard 
+                CallbackPath = new PathString("/signin-auth0"),
 
-				Events = new OpenIdConnectEvents
-				{
-					OnTicketReceived = context =>
-					{
-						// Get the ClaimsIdentity
-						var identity = context.Principal.Identity as ClaimsIdentity;
-						if (identity != null)
-						{
-							// Add the Name ClaimType. This is required if we want User.Identity.Name to actually return something!
-							if (!context.Principal.HasClaim(c => c.Type == ClaimTypes.Name) &&
-									identity.HasClaim(c => c.Type == "name"))
-								identity.AddClaim(new Claim(ClaimTypes.Name, identity.FindFirst("name").Value));
+                // Configure the Claims Issuer to be Auth0
+                ClaimsIssuer = "Auth0",
 
-							// Check if token names are stored in Properties
-							if (context.Properties.Items.ContainsKey(".TokenNames"))
-							{
-								// Token names a semicolon separated
-								string[] tokenNames = context.Properties.Items[".TokenNames"].Split(';');
+                // Saves tokens to the AuthenticationProperties
+                SaveTokens = true,
 
-								// Add each token value as Claim
-								foreach (var tokenName in tokenNames)
-								{
-									// Tokens are stored in a Dictionary with the Key ".Token.<token name>"
-									string tokenValue = context.Properties.Items[$".Token.{tokenName}"];
+                Events = new OpenIdConnectEvents
+                {
+                    OnTicketReceived = context =>
+                    {
+                        // Get the ClaimsIdentity
+                        var identity = context.Principal.Identity as ClaimsIdentity;
+                        if (identity != null)
+                        {
+                            // Add the Name ClaimType. This is required if we want User.Identity.Name to actually return something!
+                            if (!context.Principal.HasClaim(c => c.Type == ClaimTypes.Name) &&
+                                    identity.HasClaim(c => c.Type == "name"))
+                                identity.AddClaim(new Claim(ClaimTypes.Name, identity.FindFirst("name").Value));
 
-									identity.AddClaim(new Claim(tokenName, tokenValue));
-								}
-							}
-						}
+                            // Check if token names are stored in Properties
+                            if (context.Properties.Items.ContainsKey(".TokenNames"))
+                            {
+                                // Token names a semicolon separated
+                                string[] tokenNames = context.Properties.Items[".TokenNames"].Split(';');
 
-						return Task.FromResult(0);
-					}
-				}
-			};
-			options.Scope.Clear();
-			options.Scope.Add("openid");
-			options.Scope.Add("name");
-			options.Scope.Add("email");
-			options.Scope.Add("picture");
-			options.Scope.Add("color");
-			options.Scope.Add("competions");
-			options.Scope.Add("role");
-			options.Scope.Add("profile");
-			app.UseOpenIdConnectAuthentication(options);
+                                // Add each token value as Claim
+                                foreach (var tokenName in tokenNames)
+                                {
+                                    // Tokens are stored in a Dictionary with the Key ".Token.<token name>"
+                                    string tokenValue = context.Properties.Items[$".Token.{tokenName}"];
 
-			//app.UseCors(
-			//	builder => builder//.WithOrigins("http://localhost:4200")..AllowAnyHeader());
-			//	.AllowAnyHeader()
-			//	.AllowAnyMethod()
-			//	.AllowAnyOrigin()
-			//);
+                                    identity.AddClaim(new Claim(tokenName, tokenValue));
+                                }
+                            }
+                        }
 
-			app.UseCors("AllowAll");
+                        return Task.FromResult(0);
+                    }
+                }
+            };
+            options.Scope.Clear();
+            options.Scope.Add("openid");
+            options.Scope.Add("name");
+            options.Scope.Add("email");
+            options.Scope.Add("picture");
+            options.Scope.Add("color");
+            options.Scope.Add("competions");
+            options.Scope.Add("role");
+            options.Scope.Add("profile");
+            app.UseOpenIdConnectAuthentication(options);
 
-			//app.UseDefaultMultiPartUploadHandler();
-			
-			app.UseMvc(routes =>
-			{
-				routes.MapRoute(
-									name: "default",
-									template: "{controller=Competition}/{action=New}/{id?}");
-				//template: "{controller=Home}/{action=Index}/{id?}");
+            //app.UseCors(
+            //	builder => builder//.WithOrigins("http://localhost:4200")..AllowAnyHeader());
+            //	.AllowAnyHeader()
+            //	.AllowAnyMethod()
+            //	.AllowAnyOrigin()
+            //);
 
-				routes.MapRoute(
-						"NotFound",
-						"Competition/{*url}",
-						new { controller = "Competition", action = "New" }
-				);
-			});
+            app.UseCors("AllowAll");
+
+            //app.UseDefaultMultiPartUploadHandler();
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                                    name: "default",
+                                    template: "{controller=Competition}/{action=New}/{id?}");
+                //template: "{controller=Home}/{action=Index}/{id?}");
+
+                routes.MapRoute(
+                        "NotFound",
+                        "Competition/{*url}",
+                        new { controller = "Competition", action = "New" }
+                );
+            });
 
 
 
 
-		}
-	}
+        }
+    }
 }

@@ -39,6 +39,11 @@ export class ApiService {
     return this.http.post(url, competition).map(x => x.json());
   }
 
+  public post(url: string, data:any): Observable<any> {
+    var url = this.apiBaseUrl + url;    
+    return this.http.post(url, data);
+  }
+
   public get<T>(url: string): Observable<T> {
     url = this.apiBaseUrl + url;
     return this.http.get(url)

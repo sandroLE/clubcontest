@@ -30,5 +30,23 @@ namespace SampleMvcApp.Controllers
 
 			return Ok(User.IsAdminUser(c, _dbContext));
 		}
+        
+        [HttpPost]
+	    public IActionResult SaveSettings([FromBody] UserSettings userSettings)
+	    {
+	        var user = _dbContext.User.FirstOrDefault(x => x.Auth0Id == User.GetId());
+	        if (user != null)
+	        {
+	            user.Name = userSettings.DisplayName;
+	            _dbContext.SaveChanges();
+	        }
+            return Ok();
+
+	    }
 	}
+
+    public class UserSettings  
+    {
+        public string DisplayName { get; set; }
+    }
 }

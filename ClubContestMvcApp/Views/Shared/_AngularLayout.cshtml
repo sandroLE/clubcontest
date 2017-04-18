@@ -18,30 +18,21 @@
 	<style>
 		body {
 			margin: 0;
+		    background-color: whitesmoke;
 		}
 	</style>
 
 	<script>
 		window.userName = '@ViewBag.UserName';
-		window.userId = @ViewBag.UserId;
+        window.userId = @ViewBag.UserId;
+        window.isAuthenticated = @User.Identity.IsAuthenticated.ToString().ToLower();
 	</script>
 </head>
 <body>
 
-<div class="top-bar">
-	<div class="top-bar-inner">
-		@if (User.Identity.IsAuthenticated)
-		{
-			<a asp-controller="Account" asp-action="Settings">@User.Identity.Name</a>
-			<a asp-controller="Account" asp-action="Logout">Logout</a>
-		}
-		else
-		{
-			<a asp-controller="Account" asp-action="Login">Login</a>
-		}
-	</div>
-</div>
-@RenderBody()
+
+    @RenderBody()
+
 	<script type="text/javascript" src="~/js/inline.bundle.js?cacheKey=1"></script>
 	<script type="text/javascript" src="~/js/vendor.bundle.js?cacheKey=1"></script>
 	<script type="text/javascript" src="~/js/main.bundle.js?cacheKey=1"></script>

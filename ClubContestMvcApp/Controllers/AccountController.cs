@@ -4,12 +4,20 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using SampleMvcApp.Database;
+using SampleMvcApp.Extensions;
 using SampleMvcApp.ViewModels;
 
 namespace SampleMvcApp.Controllers
 {
 	public class AccountController : Controller
 	{
+        private readonly DatabaseContext _dbContext;
+
+        public AccountController(DatabaseContext dbContext)
+	    {
+            _dbContext = dbContext;
+        }
 		public IActionResult Login(string returnUrl = "/")
 		{
 			return new ChallengeResult("Auth0", new AuthenticationProperties() { RedirectUri = returnUrl });
@@ -49,7 +57,10 @@ namespace SampleMvcApp.Controllers
 		[Authorize]
 		public IActionResult Settings()
 		{
-			return View();
+            var currentUser = _dbContext.User.FirstOrDefault(x => x.Auth0Id == User.GetId());
+            ViewBag.UserName = currentUser?.Name ?? "GAST";
+            ViewBag.UserId = currentUser?.Id ?? -1;
+            return View();
 		}
 	}
 }
