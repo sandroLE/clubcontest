@@ -7,12 +7,6 @@
 
 }
 
-@media(max-width:420px){
-  #mapid {
-       display: none;
-  }
-}
-
 .invisible{
     height: 0px;
     overflow: hidden;
@@ -28,12 +22,20 @@
     flex-grow: 1;
     z-index: 99;
     overflow-y:auto;
+    max-width: 500px;
+    transition: max-width ease-in 0.2s  ;
+
 }
 
 @media(max-width:420px){
   .sidebar {
         width:419px;
   }
+}
+
+.sidebar.hidden{
+    max-width: 0px;
+    transition: max-width ease-in 0.2s  ;
 }
 
 .flight-list{
@@ -149,4 +151,21 @@ font-size:20px;
 font-weight:normal;
 line-height:18px;
 text-shadow:rgba(0, 0, 0, 0.247059) 0px -1px 0px;
+}
+
+
+.grabber{
+    position: absolute;
+    width: 26px;
+    left: 0;
+    right: -13px;
+    background-color: rgba(255, 255, 255, 0.92);
+    z-index: 9999;   
+    top: 5px;
+    height: 41px;
+    box-shadow: 0 0 3px 0 grey;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
 }

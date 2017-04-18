@@ -26,6 +26,7 @@ export class CompetitionDayComponent {
   private selectedFlightIds: number[] = [];
   private loadingFlights: number[] = [];
   private expandedFlight: number = null;
+  public isSideBarHidden = false;
 
   public hasError = false;
   @Input() private dayId = 0;
@@ -208,5 +209,13 @@ export class CompetitionDayComponent {
       return [...array];
     }
     return array;
+  }
+
+  public hideSidebar(){
+    this.isSideBarHidden = true;
+  }
+
+  public showSidebar(){
+    this.isSideBarHidden = false;
   }
 }
