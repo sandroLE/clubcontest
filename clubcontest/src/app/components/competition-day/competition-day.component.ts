@@ -131,7 +131,7 @@ export class CompetitionDayComponent {
     this.mapService.clearFlights();
       this.day.Flights
         .filter(x => x.Id != flight.Id && this.selectedFlightIds.indexOf(x.Id) >= 0)
-        .forEach(f => this.mapService.addFlight(f));
+        .forEach((f, i) => this.mapService.addFlight(f, this.getColor(this.day.Flights.indexOf(f))));
   }
 
   private selectFlight(flight: IFlight): Observable<IFlight> {
@@ -145,15 +145,33 @@ export class CompetitionDayComponent {
       
       this.isInProgress = false;
       this.loadingFlights = this.loadingFlights.filter(x => x != loadedFlight.Id);      
-      this.mapService.addFlight(loadedFlight);      
+     // this.mapService.addFlight(loadedFlight);      
       this.replace(loadedFlight);
 
       this.mapService.clearFlights();
       this.day.Flights
         .filter(x => this.selectedFlightIds.indexOf(x.Id) >= 0)
-        .forEach(f => this.mapService.addFlight(f));
+        .forEach((f, i) => this.mapService.addFlight(f, this.getColor(this.day.Flights.indexOf(f))));
     });
     return obs;
+  }
+
+  private getColor(i:number):string{
+    var colors = [];
+    colors[0] = "#00d034";
+    colors[1] = "blueviolet";
+    colors[2] = "blue";
+    colors[3] = "brown";
+    colors[4] = "chocolate";
+    colors[5] = "green";
+    colors[6] = "crimson";
+    colors[7] = "darkorange";
+    colors[8] = "deeppink";
+    colors[9] = "red";
+    colors[10] = "lightseagreen";
+    colors[11] = "coral";
+    colors[12] = "deepskyblue";
+    return colors[i%13];
   }
 
 
@@ -180,7 +198,7 @@ export class CompetitionDayComponent {
 
   private onTurnpointsChanged(flight: IFlight): void {
     this.mapService.clearFlights();
-    this.mapService.addFlight(flight, true)
+    this.mapService.addFlight(flight,  this.getColor(this.day.Flights.indexOf(flight)), true);
   }
 
   private applyFlightUpdates(flight: IFlight): void {

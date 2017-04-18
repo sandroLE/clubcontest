@@ -19,6 +19,20 @@
     border-left: 5px solid #3388ff;
 }
 
+.flight.selected.c0, .flight.c0:hover { border-left-color: #00d034; }
+.flight.selected.c1, .flight.c1:hover { border-left-color: blueviolet; }
+.flight.selected.c2, .flight.c2:hover { border-left-color: blue; }
+.flight.selected.c3, .flight.c3:hover { border-left-color: brown; }
+.flight.selected.c4, .flight.c4:hover { border-left-color: chocolate; }
+.flight.selected.c5, .flight.c5:hover { border-left-color: green; }
+.flight.selected.c6, .flight.c6:hover { border-left-color: crimson; }
+.flight.selected.c7, .flight.c7:hover { border-left-color: darkorange; }
+.flight.selected.c8, .flight.c8:hover { border-left-color: deeppink; }
+.flight.selected.c9, .flight.c9:hover { border-left-color: red; }
+.flight.selected.c10,.flight.c10:hover{ border-left-color: lightseagreen; }
+.flight.selected.c11,.flight.c11:hover{ border-left-color: coral; }
+.flight.selected.c12,.flight.c12:hover{ border-left-color: deepskyblue; }
+
 .flight.expanded.selected, 
 .flight.expanded:hover{
     background-color:rgb(231, 241, 255);

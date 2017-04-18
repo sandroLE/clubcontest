@@ -18,6 +18,8 @@ import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 
 export class FlightComponent {
 
+  @Input() public index:number = 0;
+
   private turnpoints: ILoggerPoint[] = [];
 
   private _isExpanded = false;

@@ -187,23 +187,23 @@ export class MapService {
   private flightLayers: { [id: number]: L.LayerGroup } = {};
 
 
-  public addFlight(flight: IFlight, updateCache = false): L.Layer {
+  public addFlight(flight: IFlight, color:string, updateCache = false): L.Layer {
     if (flight == null) {
       return;
     }
     if (this.flightLayers[flight.Id] == null || updateCache) {
-      this.flightLayers[flight.Id] = this.createFlightLayer(flight);
+      this.flightLayers[flight.Id] = this.createFlightLayer(flight, color);
     }
     var flightLayer = this.flightLayers[flight.Id];
     this.flightLayerGroup.addLayer(flightLayer)
   }
 
 
-  private createFlightLayer(flight: IFlight): L.LayerGroup {
+  private createFlightLayer(flight: IFlight, color:string): L.LayerGroup {
     var points = (<any[]>flight.Points).map((x) => {
       return [x.Latitude, x.Longitude]
     });
-    var polyline = L.polyline(points, { color: '#FF0000' });
+    var polyline = L.polyline(points, { color: color });
     let flightLGroup = L.layerGroup([polyline]);
 
     if (flight.turnPoints != null) {

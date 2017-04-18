@@ -25,7 +25,7 @@
 				</div>
 			</div>
 
-			<app-flight *ngFor="let flight of day?.Flights | orderbyScore"
+			<app-flight *ngFor="let flight of day?.Flights | orderbyScore; let i=index" 
 			             [flight]="flight"
 			             [task]="day?.XcSoarTask"
 			             [selected]="selectedFlightIds.indexOf(flight.Id) >= 0"
@@ -36,7 +36,8 @@
 			             (clicked)="toggleSelect(flight)"
 			             (changed)="applyFlightUpdates($event)"
 			             (turnpointsChanged)="onTurnpointsChanged($event)"
-			             (delete)="deleteFlight(flight)">
+			             (delete)="deleteFlight(flight)"
+						 [index]="i">
 			</app-flight>
 
 
