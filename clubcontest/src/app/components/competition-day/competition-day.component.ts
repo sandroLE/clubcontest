@@ -23,10 +23,14 @@ export class CompetitionDayComponent {
   private day: IDay = null;
   private isMapVisible = true;
   private isInProgress = false;
-  private selectedFlightIds: number[] = [];
+  public selectedFlightIds: number[] = [];
   private loadingFlights: number[] = [];
   private expandedFlight: number = null;
   public isSideBarHidden = false;
+  public sliderMinTime = 0;
+  public sliderMaxTime = 100;
+  public sliderTime = 50;
+  public sliderDisplayTime = "";
 
   public hasError = false;
   @Input() private dayId = 0;
@@ -132,6 +136,7 @@ export class CompetitionDayComponent {
       this.day.Flights
         .filter(x => x.Id != flight.Id && this.selectedFlightIds.indexOf(x.Id) >= 0)
         .forEach((f, i) => this.mapService.addFlight(f, this.getColor(this.day.Flights.indexOf(f))));
+    this.initializeSliderValues();
   }
 
   private selectFlight(flight: IFlight): Observable<IFlight> {
@@ -152,8 +157,24 @@ export class CompetitionDayComponent {
       this.day.Flights
         .filter(x => this.selectedFlightIds.indexOf(x.Id) >= 0)
         .forEach((f, i) => this.mapService.addFlight(f, this.getColor(this.day.Flights.indexOf(f))));
+
+        this.initializeSliderValues();
+
     });
     return obs;
+  }
+
+  private initializeSliderValues(){
+      var selectedFlights = this.day.Flights.filter(x => x.Points != null && x.Points.length > 0 && this.selectedFlightIds.indexOf(x.Id) >= 0 );
+      if (selectedFlights.length > 0){      
+        var first = selectedFlights.sort((a,b) => a.Points[0].Time.getTime() - b.Points[0].Time.getTime())[0];  
+        this.sliderMinTime =  first.Points[0].Time.getTime();
+        var last = selectedFlights.sort((a,b) => a.Points[a.Points.length-1].Time.getTime() - b.Points[b.Points.length-1].Time.getTime())[selectedFlights.length-1];  
+        this.sliderMaxTime = this.sliderTime = last.Points[last.Points.length-1].Time.getTime();     
+        this.sliderDisplayTime = this.getFormatedTime(new Date(this.sliderTime));
+        this.sliderChanged();
+      }
+      
   }
 
   private getColor(i:number):string{
@@ -236,4 +257,27 @@ export class CompetitionDayComponent {
   public showSidebar(){
     this.isSideBarHidden = false;
   }
+
+  public sliderMouseOver(){
+    this.mapService.map.dragging.disable();
+  }
+
+  public sliderMouseOut(){
+    this.mapService.map.dragging.enable();
+  }
+
+  public sliderChanged(){
+    this.mapService.clearFlights();
+    this.day.Flights
+        .filter(x => this.selectedFlightIds.indexOf(x.Id) >= 0)
+        .forEach((f, i) => this.mapService.addFlight(f, this.getColor(this.day.Flights.indexOf(f)), true, this.sliderTime));
+    this.sliderDisplayTime = this.getFormatedTime(new Date(this.sliderTime)); 
+  }
+
+  private getFormatedTime(time:Date):string{
+     var options = {  hour: '2-digit', minute: '2-digit' };
+    return new Intl.DateTimeFormat('de-DE', options).format(time); 
+  }
 }
+
+declare var moment;

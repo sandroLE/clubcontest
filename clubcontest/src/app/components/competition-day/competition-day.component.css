@@ -97,9 +97,9 @@ input[type=file]{
        width: 120px;
     height: 41px;
     position: absolute;
-    z-index: 99999;
-    bottom: 10px;
-    left: 25px;
+    z-index: 9000;
+    top: 25px;
+    right: 10px;
     background-color: rgba(0, 0, 0, 0.84);
     display: -webkit-box;
     display: -ms-flexbox;
@@ -168,4 +168,22 @@ text-shadow:rgba(0, 0, 0, 0.247059) 0px -1px 0px;
     justify-content: center;
     align-items: center;
     cursor: pointer;
+}
+
+.slider  {    
+    z-index: 1004;
+    background-color: rgba(255, 254, 254, 0.82);
+    position: absolute;
+    bottom: 0;
+    width: calc(100% - 53px);
+    border-radius: 2px;
+    margin: 0 5px 28px;
+    height: 61px;
+    box-shadow: 0 0 7px 0 #6b6b6b;
+        padding: 5px;
+    box-sizing: border-box;
+}
+.slider input{
+    width: 99%;
+    margin: 0;
 }

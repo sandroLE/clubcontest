@@ -187,22 +187,22 @@ export class MapService {
   private flightLayers: { [id: number]: L.LayerGroup } = {};
 
 
-  public addFlight(flight: IFlight, color:string, updateCache = false): L.Layer {
+  public addFlight(flight: IFlight, color:string, updateCache = false, filterToTime:number = null): L.Layer {
     if (flight == null) {
       return;
     }
     if (this.flightLayers[flight.Id] == null || updateCache) {
-      this.flightLayers[flight.Id] = this.createFlightLayer(flight, color);
+      this.flightLayers[flight.Id] = this.createFlightLayer(flight, color, filterToTime);
     }
     var flightLayer = this.flightLayers[flight.Id];
     this.flightLayerGroup.addLayer(flightLayer)
   }
 
 
-  private createFlightLayer(flight: IFlight, color:string): L.LayerGroup {
-    var points = (<any[]>flight.Points).map((x) => {
-      return [x.Latitude, x.Longitude]
-    });
+  private createFlightLayer(flight: IFlight, color:string, filterToTime:number): L.LayerGroup {
+    var points = (<any[]>flight.Points)
+                .filter((x:ILoggerPoint)=> { return filterToTime == null || x.Time.getTime() < filterToTime })
+                .map((x) => { return [x.Latitude, x.Longitude]  });
     var polyline = L.polyline(points, { color: color });
     let flightLGroup = L.layerGroup([polyline]);
 
