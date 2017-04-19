@@ -27,7 +27,14 @@ namespace SampleMvcApp.Extensions
 			{
 				return true;
 			}
-			return competition.AdminUsers != null && competition.AdminUsers.Contains(user.GetEmail());
+
+			if (string.IsNullOrWhiteSpace(competition.AdminUsers))
+			{
+				return false;
+			}
+
+			var adminAddresses = competition.AdminUsers.Split(',').Select(x => x.Trim());
+			return adminAddresses.Contains(user.GetEmail());
 		}
 
 		public static string GetEmail(this ClaimsPrincipal user)
