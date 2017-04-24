@@ -11,19 +11,20 @@
       <i class="material-icons" style="font-size: 19px; margin-right: 6px;">settings</i>   
     </div>
 
-    <div class="user" [mdMenuTriggerFor]="menu">   
-      
+
+    <div class="user" *ngIf="!userService.currentUser.isLoggedIn" (click)="login()">   
         <i class="material-icons" style="font-size: 19px; margin-right: 6px;">account_circle</i>   
-        <span >{{userService.currentUser.Name}}</span>
-        <md-menu #menu="mdMenu">
-            <button *ngIf="userService.currentUser.isLoggedIn" md-menu-item (click)="showProfile()">Mein Konto</button>
-            <button *ngIf="userService.currentUser.isLoggedIn" md-menu-item (click)="logout()">abmelden</button>
-            <button *ngIf="!userService.currentUser.isLoggedIn" md-menu-item (click)="login()">anmelden</button>
+        <span *ngIf="!userService.currentUser.isLoggedIn">anmelden</span>
+    </div>   
+
+    <div class="user" [mdMenuTriggerFor]="menu" *ngIf="userService.currentUser.isLoggedIn">         
+        <i class="material-icons" style="font-size: 19px; margin-right: 6px;">account_circle</i>   
+        <span >{{userService.currentUser.Name}}</span>        
+        <md-menu  #menu="mdMenu">
+            <button  md-menu-item (click)="showProfile()">Mein Konto</button>
+            <button  md-menu-item (click)="logout()">abmelden</button>            
         </md-menu>
-
-      </div>
-
-
+    </div>
   </div>
 
   <div style="display: flex; overflow: auto;">
