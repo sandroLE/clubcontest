@@ -69,3 +69,9 @@ input[type=file]{
 .main textarea{
     width:100%;
 }
+
+.save-button{
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 30px;
+}

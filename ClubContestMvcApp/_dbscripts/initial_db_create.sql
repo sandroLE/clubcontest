@@ -17,6 +17,7 @@ CREATE TABLE [dbo].[CC_Competition] (
     [Name]       NVARCHAR (MAX) NOT NULL,
     [CreatorId]  INT            NOT NULL,
     [AdminUsers] NVARCHAR (MAX) NULL,
+    [Waypoints] NVARCHAR(MAX) NULL, 
     PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Competition_ToTable] FOREIGN KEY ([CreatorId]) REFERENCES [dbo].[CC_User] ([Id])
 );

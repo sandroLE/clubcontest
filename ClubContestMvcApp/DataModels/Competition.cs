@@ -13,6 +13,8 @@ namespace SampleMvcApp.DataModels
 
 		public string AdminUsers { get; set; }
 	
+		public string Waypoints { get; set; }
+
 		[JsonProperty("Days")]
 		public  IList<Day> Days { get; set; }
 

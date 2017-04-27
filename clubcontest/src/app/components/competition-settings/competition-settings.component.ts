@@ -35,6 +35,9 @@ export class CompetitionSettingsComponent {
   public save(){
      this.api.updateCompetition(this.competition).subscribe(x => {
        alert("Einstellungen wurden erfolgreich gespeichert");
+     }, (error) => {
+       console.error("Es ist ein Fehler beim Speichern aufgetreten",error);
+       alert("Es ist ein Fehler beim Speichern aufgetreten");
      });
   }
 

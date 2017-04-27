@@ -117,9 +117,10 @@ namespace SampleMvcApp.Controllers
 			}
 			
 			c.AdminUsers = competition.AdminUsers;
+			c.Waypoints = competition.Waypoints;
 			_dbContext.SaveChanges();
 
-			return Ok();
+			return Ok(new {});
 		}
 
 
@@ -173,6 +174,7 @@ namespace SampleMvcApp.Controllers
 	{
 		public int Id { get; set; }
 		public string AdminUsers { get; set; }
+		public string Waypoints { get; set; }
 	}
 
 	public class CreateCompetitionModel

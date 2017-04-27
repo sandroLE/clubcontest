@@ -5,6 +5,7 @@ import { ITask, ITaskPoint } from './../models/task';
 import { Http } from '@angular/http';
 import { Injectable, EventEmitter } from '@angular/core';
 import 'rxjs/add/operator/takeUntil';
+import { Subscription } from "rxjs/Subscription";
 
 @Injectable()
 export class MapService {
@@ -15,7 +16,10 @@ export class MapService {
   private observationZoneLayer: L.LayerGroup;
   private flightLayerGroup: L.LayerGroup;
   private insertedTaskPoint: ITaskPoint = null;
-  private taskEditEvents: EventEmitter<void> = new EventEmitter<void>();
+  private taskEditEvents: EventEmitter<number> = new EventEmitter<number>();
+  public parsedWayPoints: { name: string, lat: number, lng: number }[] = [];
+  private wayPoints: L.LayerGroup = null;
+  
   constructor(private geoUtil: GeoUtilService) {
     this.flightLayerGroup = L.layerGroup([]);
   }
@@ -30,8 +34,8 @@ export class MapService {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(this._map);
     //L.tileLayer('http://prosoar.de/airspace/{z}/{x}/{y}.png', { attribution: "prosoar.de" }).addTo(this.map);
-    L.tileLayer('https://skylines.aero/mapproxy/tiles/1.0.0/airspace+airports/{z}/{x}/{y}.png', {  }).addTo(this.map);
-    
+    L.tileLayer('https://skylines.aero/mapproxy/tiles/1.0.0/airspace+airports/{z}/{x}/{y}.png', {}).addTo(this.map);
+
     this.flightLayerGroup.addTo(this._map);
     return this._map;
   }
@@ -154,10 +158,10 @@ export class MapService {
     //sector borders
     var LGeometryUtil: any = (<any>L).GeometryUtil;
     var t1 = L.latLng(task.TaskPoints[index].Latitude, task.TaskPoints[index].Longitude);
-    var t2 = LGeometryUtil.destination(t1, direction, 10000);   
+    var t2 = LGeometryUtil.destination(t1, direction, 10000);
     var leftPoint: L.LatLng = LGeometryUtil.rotatePoint(map, t2, -45, t1);
     var rightPoint: L.LatLng = LGeometryUtil.rotatePoint(map, t2, +45, t1);
-    var semicircle = this.createKeyhole(task, index);  
+    var semicircle = this.createKeyhole(task, index);
     return semicircle;
   }
 
@@ -174,7 +178,7 @@ export class MapService {
     tpNext.normalize();
 
     var s = prevTp.add(tpNext);
-    var tpLatLng = L.latLng(tp.Latitude, tp.Longitude);   
+    var tpLatLng = L.latLng(tp.Latitude, tp.Longitude);
     var semicircle: any = L.circle(tpLatLng, { radius: 10000 });
     semicircle.setDirection(s.angleDeg(), 90);
 
@@ -187,7 +191,7 @@ export class MapService {
   private flightLayers: { [id: number]: L.LayerGroup } = {};
 
 
-  public addFlight(flight: IFlight, color:string, updateCache = false, filterToTime:number = null): L.Layer {
+  public addFlight(flight: IFlight, color: string, updateCache = false, filterToTime: number = null): L.Layer {
     if (flight == null) {
       return;
     }
@@ -199,10 +203,10 @@ export class MapService {
   }
 
 
-  private createFlightLayer(flight: IFlight, color:string, filterToTime:number): L.LayerGroup {
+  private createFlightLayer(flight: IFlight, color: string, filterToTime: number): L.LayerGroup {
     var points = (<any[]>flight.Points)
-                .filter((x:ILoggerPoint)=> { return filterToTime == null || x.Time.getTime() < filterToTime })
-                .map((x) => { return [x.Latitude, x.Longitude]  });
+      .filter((x: ILoggerPoint) => { return filterToTime == null || x.Time.getTime() < filterToTime })
+      .map((x) => { return [x.Latitude, x.Longitude] });
     var polyline = L.polyline(points, { color: color });
     let flightLGroup = L.layerGroup([polyline]);
 
@@ -252,7 +256,7 @@ export class MapService {
     m.almostOver.addLayer(flightLayer);
     var obs = Observable.fromEvent(m, "almost:move");
     obs.takeUntil(this.almostOverClick()).subscribe((e: any) => {
-      //subscribe just for remove layer on complete 
+      //subscribe just for remove layer on complete       
     }
       , (err) => alert(err)
       , () => {
@@ -262,18 +266,52 @@ export class MapService {
     return obs;
   }
 
-
   /* Task editor */
   private startEditMode(task: ITask) {
-
     this.unbindAllEditEvents();
     (<any>this).taskLayer.enableEdit();
     this._map.on('editable:drawing:move', e => this.onTaskEdit(e, task));
     this._map.on('editable:vertex:deleted', e => this.onTaskPointDeleted(e, task));
     this._map.on('editable:vertex:click', (e: any) => this.onVertexClicked(e, task));
     this._map.on('editable:vertex:dragend', (e: any) => this.onVertexDragEnd(e, task));
-    this._map.on('editable:middlemarker:mousedown', (e: any) => this.onMiddleMarkerMouseDown(e,task));
+    this._map.on('editable:middlemarker:mousedown', (e: any) => this.onMiddleMarkerMouseDown(e, task));
+    this.createWaypointAndBindEvents();
   }
+
+
+  private nearTurnPointSnap: { latlng: L.LatLng, name: string } = null;
+
+
+  private disposableSubscriptions: Subscription[] = [];
+
+  private createWaypointAndBindEvents() {
+    this.wayPoints = L.layerGroup([]);
+    var m = <any>this._map;
+    this.parsedWayPoints.forEach(wp => {
+      let marker = L.circleMarker([wp.lat, wp.lng], { radius: 3, color: "#88F" });
+      marker.bindTooltip(wp.name);
+      m.almostOver.addLayer(marker);
+      this.wayPoints.addLayer(marker);
+    })
+    this.wayPoints.addTo(this._map);
+
+    //TODO: unsubscribe to avoid memory leaks
+    let subscription = Observable.fromEvent(m, "almost:over").subscribe((e: any) => {
+      this.nearTurnPointSnap = { latlng: e.latlng, name: e.layer.getTooltip().getContent() };
+      console.log("almost over start", this.nearTurnPointSnap);
+    });
+
+    this.disposableSubscriptions.push(subscription);
+
+    subscription = Observable.fromEvent(m, "almost:out").subscribe((e: any) => {
+      this.nearTurnPointSnap = null;
+      console.log("almost over out", this.nearTurnPointSnap);
+    });   
+
+    this.disposableSubscriptions.push(subscription);
+  }
+
+
 
   private onVertexClicked(e: any, task: ITask) {
     if (e.layer instanceof (<any>L).Circle) {
@@ -288,23 +326,23 @@ export class MapService {
   }
 
 
-  private onMiddleMarkerMouseDown(e: any, task:ITask) {    
+  private onMiddleMarkerMouseDown(e: any, task: ITask) {
     this.insertedTaskPoint = {
       Index: 0,
       Latitude: e.latlng.lat,
       Longitude: e.latlng.lng,
       Name: "WP",
-      ObservationZone: { 
-        Length: 0, 
-        Radius: 1000, 
-        Type: task.Type == "AAT" ? "Cylinder" : "Keyhole" 
+      ObservationZone: {
+        Length: 0,
+        Radius: 1000,
+        Type: task.Type == "AAT" ? "Cylinder" : "Keyhole"
       },
       Type: task.Type == "AAT" ? "Area" : "Turn"
     }
   }
 
 
-  private onVertexDragEnd(e, task: ITask) {   
+  private onVertexDragEnd(e, task: ITask) {
     if (e.layer instanceof (<any>L).Circle) {
       var latLng = e.layer.getLatLng(); //the center of the circle
       var index = this.getTaskPointIndex(latLng, task);
@@ -326,7 +364,7 @@ export class MapService {
   }
 
 
-  public getTaskEditEvents(): Observable<void> {
+  public getTaskEditEvents(): Observable<number> {
     return this.taskEditEvents.asObservable();
   }
 
@@ -340,8 +378,16 @@ export class MapService {
       }
       task.TaskPoints[i].Latitude = e.latlng.lat;
       task.TaskPoints[i].Longitude = e.latlng.lng;
+      task.TaskPoints[i].Name = "Freie Wende";
+
+      if (this.nearTurnPointSnap) {
+        e.vertex.setLatLng(this.nearTurnPointSnap.latlng);
+        task.TaskPoints[i].Latitude = this.nearTurnPointSnap.latlng.lat;
+        task.TaskPoints[i].Longitude = this.nearTurnPointSnap.latlng.lng;
+        task.TaskPoints[i].Name = this.nearTurnPointSnap.name;
+      }
       this.repaintObservationZoneLayerOnEdit(task);
-      this.taskEditEvents.next();
+      this.taskEditEvents.next(i);
     }
   }
 
@@ -374,6 +420,9 @@ export class MapService {
 
   public stopEditMode() {
     this.unbindAllEditEvents();
+    if (this.wayPoints != null) {
+      this._map.removeLayer(this.wayPoints);
+    }    
   }
 
   private unbindAllEditEvents() {
@@ -383,6 +432,7 @@ export class MapService {
     this._map.off('editable:vertex:dragend');
     this._map.off('editable:middlemarker:mousedown');
     this.insertedTaskPoint = null;
+    this.disposableSubscriptions.forEach(s => s.unsubscribe()); //TODO: how to dispose it correctly?
   }
 }
 

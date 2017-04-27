@@ -6,4 +6,7 @@ export interface ICompetition{
     CreatorId:number;
     Days: IDay[];
     AdminUsers:string;
+    Waypoints:string;
+
+    
 }
