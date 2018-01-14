@@ -37,14 +37,14 @@
 			<md-option *ngFor="let type of gliderTypes" [value]="type.name">{{type.name}}</md-option>
 		</md-select>
 		<div class="button-footer">
-			<button md-icon-button (click)="onDeleteButtonClicked()">
+			<button md-icon-button md-tooltip="Flug löschen" (click)="onDeleteButtonClicked()">
 				<md-icon class="md-24">delete</md-icon>
 			</button>
 
-			<button md-icon-button (click)="recalculate()">
+			<button md-icon-button md-tooltip="Neu berechnen" (click)="recalculate()">
 				<md-icon class="md-24">refresh</md-icon>
 			</button>
-			<button md-icon-button (click)="save()">
+			<button md-icon-button md-tooltip="Speichern" (click)="save()">
 				<md-icon class="md-24">done</md-icon>
 			</button>
 		</div>
