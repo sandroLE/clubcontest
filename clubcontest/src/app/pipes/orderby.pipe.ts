@@ -11,7 +11,11 @@ export class OrderByPipe  implements PipeTransform {
   
   transform(flights: IFlight[]): IFlight[] {
       return flights.sort( (a,b) => {
-          return ((b.Score) || 0) - ((a.Score) || 0);
+          var result = ((b.Score) || 0) - ((a.Score) || 0);
+          if (result != 0){
+            return result;
+          }
+          return b.Id - a.Id;
       })
   }
-}
+} 

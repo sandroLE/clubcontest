@@ -2,6 +2,7 @@ import { GeoUtilService } from './../geoUtil.service';
 import { MapService } from './../map.service';
 import { ITask } from './../../models/task';
 import { ILoggerPoint, IFlight, IFlightScoring } from './../../models/flight';
+import * as L from 'leaflet';
 
 declare var turf;
 
@@ -95,32 +96,26 @@ export abstract class TaskCalculator {
 
 
     private isCorrectStartlineCrossingDirection(flight: number[][], task: ITask): boolean {
-        var bearingToNextWP = this.geoUtil.getBearing(
-            task.TaskPoints[0].Latitude, task.TaskPoints[0].Longitude,
-            task.TaskPoints[1].Latitude, task.TaskPoints[1].Longitude);
-        var flightBearing = this.geoUtil.getBearing(
-            flight[0][0], flight[0][1]
-            , flight[1][0], flight[1][1]);
-        var max = bearingToNextWP + 90;
-        var min = bearingToNextWP - 90;
-        var diff = Math.max(bearingToNextWP, flightBearing) - Math.min(bearingToNextWP, flightBearing);
-        return min <= bearingToNextWP - diff && bearingToNextWP + diff <= max;
+        var v1 = new Vector(task.TaskPoints[0].Latitude-task.TaskPoints[1].Latitude,task.TaskPoints[0].Longitude-task.TaskPoints[1].Longitude );
+        var v2 = new Vector(flight[0][0]-flight[1][0], flight[0][1]- flight[1][1]);
+        return v1.mult(v2) > 0;
     }
-
 
     private isCorrectFinishLineCrossingDirection(flight: number[][], task: ITask): boolean {
         var finishTP = task.TaskPoints[task.TaskPoints.length - 1];
         var beforeFinishTP = task.TaskPoints[task.TaskPoints.length - 2];
-        var finishLineBearing = this.geoUtil.getBearing(
-            beforeFinishTP.Latitude, beforeFinishTP.Longitude,
-            finishTP.Latitude, finishTP.Longitude);
-        var flightBearing = this.geoUtil.getBearing(
-            flight[0][0], flight[0][1],
-            flight[1][0], flight[1][1]);
-        var max = finishLineBearing + 90;
-        var min = finishLineBearing - 90;
-        var diff = Math.max(finishLineBearing, flightBearing) - Math.min(finishLineBearing, flightBearing);
-        return min <= finishLineBearing - diff && finishLineBearing + diff <= max;
+        var v1 = new Vector(finishTP.Latitude-beforeFinishTP.Latitude, finishTP.Longitude-beforeFinishTP.Longitude);
+        var v2 = new Vector(flight[0][0]-flight[1][0], flight[0][1]- flight[1][1]);
+        return v1.mult(v2) < 0;
+    }
+}
+
+
+export class Vector{
+    constructor(private a:number, private b:number){
     }
 
+    public mult(v:Vector):number{
+        return this.a*v.a + this.b * v.b;
+    }
 }

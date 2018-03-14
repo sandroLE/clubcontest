@@ -53,6 +53,9 @@ namespace SampleMvcApp.Extensions
 
 			return points.ToArray();
 		}
+
+	
+
 	}
 
 	public class Point

@@ -25,17 +25,17 @@ export class TotalResultComponent implements OnInit {
 
   ngOnChanges() {
 
-    var total: {[userId:number]: { user:IUser, total:number, days: { day:IDay, score:number }[]  }} = {};
+    var total: {[pilotName:string]: { pilotName:string, total:number, days: { day:IDay, score:number }[]  }} = {};
 
     this.competition.Days.forEach(day => {
       var daily = this.getDailyResult(day);
 
       daily.forEach(d => {
-        if (!total[d.user.Id]){
-          total[d.user.Id] = { user:d.user, total:0, days:[] }
+        if (!total[d.pilotName]){
+          total[d.pilotName] = { pilotName:d.pilotName, total:0, days:[] }
         }
-        total[d.user.Id].total += d.scores;
-        total[d.user.Id].days.push({ day:day, score:d.scores });
+        total[d.pilotName].total += d.scores;
+        total[d.pilotName].days.push({ day:day, score:d.scores });
       })      
 
       
@@ -60,11 +60,10 @@ export class TotalResultComponent implements OnInit {
   }
 
 
-  private getDailyResult(d: IDay) : { scores:number, user:IUser  }[] {
-    
+  private getDailyResult(d: IDay) : { scores:number, pilotName:string  }[] {    
     this.scoring.setFlightScrores(d.Flights);    
     return d.Flights.map(f => {  
-      return { scores: f.Score, user:f.User }
+      return { scores: f.Score, pilotName:f.PilotName }
     });    
   }
 }

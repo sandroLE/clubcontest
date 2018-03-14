@@ -34,7 +34,7 @@
       
       <div><br><br><br>Möchtest du deinen eigenen Wettbewerb mit diesem Namen erstellen? </div>
       <div class="create-button">           
-        <button md-raised-button color="accent" (click)="create()" [disabled]="isButtonDisabled">Ja - Wettbewerb "{{name}}" erstellen</button>   
+        <button mat-raised-button color="accent" (click)="create()" [disabled]="isButtonDisabled">Ja - Wettbewerb "{{name}}" erstellen</button>   
       </div>
       <div class="invalid-name" *ngIf="name?.length > 3 && isButtonDisabled">Verwende ausschließlich Buchstaben oder Zahlen, jedoch keine Leerzeichen, Bindestriche oder andere Sonderzeichen. </div>
     </div>

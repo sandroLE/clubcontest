@@ -61,7 +61,9 @@ namespace SampleMvcApp.Controllers
 			return new JsonResult(new {Exist = _dbContext.Competitions.Any(x => x.Name.ToLower() == name.ToLower())});
 		}
 
-		[Authorize]
+#if !DEBUG 
+		[Authorize] 
+#endif
 		[HttpPost]
 		public IActionResult Create([FromBody]CreateCompetitionModel competition)
 		{
@@ -101,7 +103,9 @@ namespace SampleMvcApp.Controllers
 			return Ok();
 		}
 
-		[Authorize]
+#if !DEBUG
+		[Authorize] 
+#endif
 		[HttpPost]
 		public IActionResult UpdateAdminUsers([FromBody] UpdateAdminUsersModel competition)
 		{

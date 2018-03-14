@@ -1,0 +1,17 @@
+{
+    "/Scripts": {
+      "target": "http://lochalhost:5000",
+      "secure": false,
+      "logLevel": "debug"
+    },    
+    "/Images": {
+        "target": "http://lochalhost:5000",
+      "secure": false,
+      "logLevel": "debug"
+    },
+    "/leaflet-almostover.js":{
+      "target": "http://localhost:5000/lib/leaflet-almostover.js",
+      "secure": false,
+      "logLevel": "debug"
+    }
+  }

@@ -2,6 +2,7 @@ import { MapService } from './map.service';
 import { ITask } from './../models/task';
 import { Http } from '@angular/http';
 import { Injectable } from '@angular/core';
+import * as L from 'leaflet';
 
 declare var turf;
 
@@ -28,8 +29,8 @@ export class GeoUtilService {
     var lb = LGeometryUtil.bearing(l1, leftPoint);
     var rb = LGeometryUtil.bearing(l1, rightPoint);
     
-    var l = LGeometryUtil.destination(l1,lb, task.TaskPoints[0].ObservationZone.Length / 2);
-    var r = LGeometryUtil.destination(l1,rb, task.TaskPoints[0].ObservationZone.Length / 2);
+    var l = LGeometryUtil.destination(l1,lb, task.TaskPoints[0].ObservationZone.Length/2);
+    var r = LGeometryUtil.destination(l1,rb, task.TaskPoints[0].ObservationZone.Length/2);
     return L.polyline([l, r]);
   }
 

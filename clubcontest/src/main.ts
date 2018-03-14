@@ -1,7 +1,9 @@
 import './polyfills.ts';
+import 'leaflet-semicircle';
 import 'leaflet-geometryutil';
 import 'leaflet-almostover';
-import 'leaflet-semicircle';
+
+
 import 'leaflet.editable';
 
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';

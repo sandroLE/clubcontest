@@ -1,8 +1,8 @@
 import { ApiService } from './api.service';
 import { IUser, IUserSettings } from './../models/user';
-import { Observable } from 'rxjs/Observable';
 import { Http, Response, Headers, RequestOptions } from '@angular/http';
 import { Injectable } from '@angular/core';
+import {Observable} from 'rxjs/Rx';
 
 @Injectable()
 export class UserService {
@@ -15,22 +15,23 @@ export class UserService {
   }
 
   public isAdmin(competitionId:number):Observable<boolean>{
-    return this.api.get<boolean>("/User/IsAdmin?competitionId=" + competitionId);
+    //return this.api.get<boolean>("/User/IsAdmin?competitionId=" + competitionId);
+    return Observable.of(true);;
   }
 
   public saveSettings(userSettings:IUserSettings):Observable<any>{
     var obs = this.api.post("/User/SaveSettings", userSettings);
     obs.subscribe(() => {
-      this.currentUser.Name = userSettings.DisplayName;
+      this.currentUser.Name = userSettings.DisplayName;      
     });
     return obs;
   }
 
   public currentUser:IUser = { 
-    Id:0, 
+    Id:1, 
     Name:"tester", 
     isLoggedIn: false, 
-    isAdmin:false
+    isAdmin:true
   };
 
 }

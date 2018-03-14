@@ -1,17 +1,24 @@
 import 'rxjs/add/operator/takeUntil';
+
+import 'rxjs';
 import { UserService } from './../../../services/user.service';
 import { MapService } from './../../../services/map.service';
 import { TaskScoringService } from './../../../services/taskScoring.service';
 import { GeoUtilService } from './../../../services/geoUtil.service';
 import { ITask, ITaskPoint, IObservationZone } from './../../../models/task';
 import { IFlight, ILoggerPoint } from './../../../models/flight';
-import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import * as L from 'leaflet';
+import { FormGroup, FormControl } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { startWith, map } from 'rxjs/operators';
 
 
 @Component({
   selector: 'app-flight',
   templateUrl: './flight.component.html',
-  styleUrls: ['./flight.component.css']
+  styleUrls: ['./flight.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 
@@ -20,37 +27,51 @@ export class FlightComponent {
 
   @Input() public index:number = 0;
 
-  private turnpoints: ILoggerPoint[] = [];
+  public turnpoints: ILoggerPoint[] = [];
 
-  private _isExpanded = false;
-  @Output()
+  
+  @Output() 
   private expand = new EventEmitter<void>();
 
   @Output()
   private collapse = new EventEmitter<void>();
 
-  @Input()
-  public set isExpanded(value: boolean) { this._isExpanded = value; }
-  public get isExpanded() { return this._isExpanded; }
+  private _isExpanded = false;
+    @Input()
+    public set isExpanded(value: boolean) { this._isExpanded = value; }
+    public get isExpanded() { return this._isExpanded; }
 
   @Output()
   private delete = new EventEmitter<void>();
   @Output()
-  private turnpointsChanged = new EventEmitter<IFlight>();
-
-
-  private selectedGlider: string;
+  private turnpointsChanged = new EventEmitter<IFlight>();  
+  private autoComplete:FormControl;
 
   @Output() private changed = new EventEmitter<IFlight>();
-
   @Input() task: ITask;
+  form = new FormGroup({});
+  filteredGliderTypes: Observable<any[]> = null;
 
-  constructor(private geoUtil: GeoUtilService, private scoring: TaskScoringService, private map: MapService, public userService: UserService) {
+  @Input() color:string;
+
+  constructor(private geoUtil: GeoUtilService, private scoring: TaskScoringService, private map: MapService, public userService: UserService, private changeDetector: ChangeDetectorRef) {
 
   }
 
   ngOnInit() {
-    this.gliderTypes = this.gliderTypes.sort((a, b) => { return a.name == b.name ? 0 : a.name < b.name ? -1 : 1; })
+    
+    this.gliderTypes = this.gliderTypes.sort((a, b) => { return a.name == b.name ? 0 : a.name < b.name ? -1 : 1; });
+
+    this.form.valueChanges.subscribe((value) => {
+      this.flight.GliderType = value.selectedGlider;
+      this.flight.Handicap = this.getHandicap(this.flight.GliderType);
+      this.flight.PilotName = value.PilotName;
+      console.log(this.flight);
+    })
+  }
+
+  filter(val: string): any[] {
+    return this.gliderTypes.filter(x => x.name.toLowerCase().indexOf(val.toLowerCase()) === 0);
   }
 
   private _flight: IFlight
@@ -58,8 +79,12 @@ export class FlightComponent {
   get flight(): IFlight { return this._flight; }
   set flight(value: IFlight) { this._flight = value; this.onFlightChanged(); }
 
-  @Input() selected = false;
-  @Output() clicked = new EventEmitter<void>();
+
+  private _selected = false;
+    get selected() { return this._selected; }
+    @Input()  set selected(value:boolean) { this._selected = value; this.selectedChange.next(this._selected); }
+
+  @Output() selectedChange = new EventEmitter<boolean>();
   @Input() isLoading = false;
 
 
@@ -78,13 +103,7 @@ export class FlightComponent {
     }
   }
 
-  public onClick() {
-    this.clicked.emit();
-  }
-
-  private save() {
-    this.flight.GliderType = this.selectedGlider;
-    this.flight.Handicap = this.getHandicap(this.flight.GliderType);
+  private save() {    
     this.changed.emit(this.flight);
   }
 
@@ -100,7 +119,11 @@ export class FlightComponent {
     if (!this.flight.GliderType) {
       this.flight.GliderType = this.gliderTypes[0].name;
     }
-    this.selectedGlider = this.flight.GliderType;
+    
+    var autoComplete = new FormControl(this.flight.GliderType);
+    this.filteredGliderTypes = autoComplete.valueChanges.pipe(startWith(''), map(val => this.filter(val)));
+    this.form.setControl("selectedGlider", autoComplete);
+    this.form.setControl("PilotName", new FormControl(this.flight.PilotName));
     this.turnpoints = this.flight.turnPoints;
   }
 
@@ -169,6 +192,7 @@ export class FlightComponent {
           this.flight.Distance = flightScoring.totalDistance;
           this.flight.Duration = flightScoring.time;
           this.flight.Finished = flightScoring.finished;
+          this.changeDetector.markForCheck();
         }
 
       }
@@ -180,6 +204,7 @@ export class FlightComponent {
   }
 
   private gliderTypes = [
+    { name: "", index: 2.00 },
     { name: "Eta", index: 1.25 },
     { name: "NimEta", index: 1.25 },
     { name: "EB 29", index: 1.25 },

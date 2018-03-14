@@ -8,7 +8,7 @@
     if (typeof define === 'function' && define.amd) {
         // AMD
         define(['leaflet'], factory);
-    } else if (typeof module !== 'undefined') {
+    } else if (typeof module !== 'undefined' && typeof require !== 'undefined') {
         // Node/CommonJS
         module.exports = factory(require('leaflet'));
     } else {
@@ -37,7 +37,7 @@
         return rotated(this, angle, r);
     };
 
-    L.Circle = L.Circle.extend({
+    var semicircle = {
         options: {
             startAngle: 0,
             stopAngle: 359.9999
@@ -114,7 +114,17 @@
                 p.distanceTo(this._point) <= this._radius + this._clickTolerance()
             );
         }
-    });
+    };
+
+    L.SemiCircle = L.Circle.extend(semicircle);
+    L.SemiCircleMarker = L.CircleMarker.extend(semicircle);
+
+    L.semiCircle = function (latlng, options) {
+        return new L.SemiCircle(latlng, options);
+    };
+    L.semiCircleMarker = function (latlng, options) {
+        return new L.SemiCircleMarker(latlng, options);
+    };
 
     var _updateCircleSVG = L.SVG.prototype._updateCircle;
     var _updateCircleCanvas = L.Canvas.prototype._updateCircle;
@@ -122,14 +132,15 @@
     L.SVG.include({
         _updateCircle: function (layer) {
             // If we want a circle, we use the original function
-            if (!layer.isSemicircle()) {
+            if (!(layer instanceof L.SemiCircle || layer instanceof L.SemiCircleMarker) ||
+                !layer.isSemicircle()) {
                 return _updateCircleSVG.call(this, layer);
             }
             if (layer._empty()) {
                 return this._setPath(layer, 'M0 0');
             }
 
-            var p = layer._point,
+            var p = layer._map.latLngToLayerPoint(layer._latlng),
                 r = layer._radius,
                 r2 = Math.round(layer._radiusY || r),
                 start = p.rotated(layer.startAngle(), r),
@@ -150,7 +161,8 @@
     L.Canvas.include({
         _updateCircle: function (layer) {
             // If we want a circle, we use the original function
-            if (!layer.isSemicircle()) {
+            if (!(layer instanceof L.SemiCircle || layer instanceof L.SemiCircleMarker) ||
+                !layer.isSemicircle()) {
                 return _updateCircleCanvas.call(this, layer);
             }
 
@@ -179,13 +191,5 @@
 
             this._fillStroke(ctx, layer);
         }
-    });
-
-    // L.CircleMarker inherits from L.Circle before the Semicircle stuff is
-    // added. The renderers test if the layer is a semicircle with a function
-    // isSemicircle, so add that to L.CircleMarker to make sure we can still
-    // make L.CircleMarkers.
-    L.CircleMarker = L.CircleMarker.extend({
-        isSemicircle: function () { return false; }
     });
 });

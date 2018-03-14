@@ -19,10 +19,16 @@ export interface IFlight {
     Score:number;
     GliderType:string;
     Handicap:number;
+    PilotName:string;
     
     Layer: L.Layer;
     IsVisible: boolean;
     isExpanded:boolean;
+    isLoading:boolean;
+    isSelected:boolean;
+    color:string;
+
+
 }
 
 export interface ILoggerPoint {

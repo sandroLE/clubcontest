@@ -17,13 +17,13 @@
         <span *ngIf="!userService.currentUser.isLoggedIn">anmelden</span>
     </div>   
 
-    <div class="user" [mdMenuTriggerFor]="menu" *ngIf="userService.currentUser.isLoggedIn">         
+    <div class="user" [matMenuTriggerFor]="menu" *ngIf="userService.currentUser.isLoggedIn">         
         <i class="material-icons" style="font-size: 19px; margin-right: 6px;">account_circle</i>   
         <span >{{userService.currentUser.Name}}</span>        
-        <md-menu  #menu="mdMenu">
-            <button  md-menu-item (click)="showProfile()">Mein Konto</button>
-            <button  md-menu-item (click)="logout()">abmelden</button>            
-        </md-menu>
+        <mat-menu  #menu="matMenu">
+            <button  mat-menu-item (click)="showProfile()">Mein Konto</button>
+            <button  mat-menu-item (click)="logout()">abmelden</button>            
+        </mat-menu>
     </div>
   </div>
 
@@ -35,7 +35,7 @@
     </div>
 
   <div (click)="createNewDay()" class="add-day-button" *ngIf="userService.currentUser.isAdmin">
-      <a  class="tab" ><md-icon>add</md-icon></a>
+      <a  class="tab" ><mat-icon>add</mat-icon></a>
       
     </div>
 

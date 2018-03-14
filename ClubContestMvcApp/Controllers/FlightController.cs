@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+
+using ClubContestMvcApp;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -41,7 +45,9 @@ namespace SampleMvcApp.Controllers
 			return BadRequest();
 		}
 
-		[Authorize]
+#if !DEBUG
+		[Authorize] 
+#endif
 		[HttpPost]
 		public IActionResult Upload(IFormFile files, int dayId)
 		{
@@ -51,13 +57,20 @@ namespace SampleMvcApp.Controllers
 			}
 			var stream = new MemoryStream();
 			Request.Form.Files[0].CopyTo(stream);
+
+
+			var parser = new IgcFileParser();
+
 			var igcFile = System.Text.Encoding.UTF8.GetString(stream.ToArray());
+			parser.Parse(igcFile);
 
 			var flight = new Flight();
 			flight.DayId = dayId;
 			flight.UserId = User.GetDbId(_dbContext);
 			flight.IgcFile = igcFile;
-
+			flight.PilotName = parser.CompetitionId ?? User.Identity.Name;
+			flight.GliderType = "";// parser.GliderType;
+			//flight.Handicap = //TODO: get from igc file
 			_dbContext.Flights.Add(flight);
 			_dbContext.SaveChanges();
 
@@ -70,7 +83,16 @@ namespace SampleMvcApp.Controllers
 			return new JsonResult(flight, serializerSettings);
 		}
 
-		[Authorize]
+
+		private string getGliderType()
+		{
+			throw new NotImplementedException();
+		}
+
+
+#if !DEBUG
+		[Authorize] 
+#endif
 		[HttpPost]
 		public IActionResult Update([FromBody]Flight flight)
 		{
@@ -87,6 +109,7 @@ namespace SampleMvcApp.Controllers
 				f.TurnPoints = flight.TurnPoints;
 				f.GliderType = flight.GliderType;
 				f.Handicap = flight.Handicap;
+				f.PilotName = flight.PilotName;
 
 				_dbContext.SaveChanges();
 				f = _dbContext.Flights.Include(x => x.User).Single(x => x.Id == flight.Id);
@@ -100,7 +123,9 @@ namespace SampleMvcApp.Controllers
 		}
 
 
-		[Authorize]
+#if !DEBUG
+		[Authorize] 
+#endif
 		[HttpDelete]
 		public IActionResult Delete(int id)
 		{
@@ -129,6 +154,9 @@ namespace SampleMvcApp.Controllers
 			return BadRequest();
 
 		}
+
+
+		
 	}
 
 }

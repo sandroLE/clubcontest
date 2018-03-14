@@ -1,8 +1,13 @@
-<div class="flight c{{index}}" [class.selected]="selected" [class.expanded]="isExpanded" >
-	<div class="headline" (click)="onClick()">
+<div class="flight c{{index}}" [class.selected]="selected" [class.expanded]="isExpanded">
+
+	<div class="headline">
+		<div class="checkbox">
+			<input type="checkbox" [(ngModel)]="selected" />
+		</div>
+
 		<div class="scores">{{flight.Score}} </div>
-		<div class="flightInfo" >
-			{{flight.User.Name}}
+		<div class="flightInfo">
+			{{flight.PilotName}}
 
 			<div class="details">
 				<div class="detail"> {{flight.Distance | rnd}} km </div>
@@ -18,40 +23,59 @@
 		</div>
 
 		<div class="more" *ngIf="flight.UserId == userService.currentUser.Id || userService.currentUser.isAdmin">
-			<button md-icon-button (click)="toggleExpand($event)">
-				<md-icon *ngIf="!isExpanded">expand_more</md-icon>
-				<md-icon *ngIf="isExpanded">expand_less</md-icon>
+			<button mat-icon-button (click)="toggleExpand($event)">
+				<mat-icon *ngIf="!isExpanded">expand_more</mat-icon>
+				<mat-icon *ngIf="isExpanded">expand_less</mat-icon>
 			</button>
 		</div>
 	</div>
 	<div *ngIf="isExpanded" class="expand-area">
 
+		<div [formGroup]="form">
+			<mat-form-field>
+				<input matInput placeholder="Pilot" formControlName="PilotName" />
+			</mat-form-field>
+
+			<mat-form-field>
+				<input type="text" matInput [matAutocomplete]="auto" formControlName="selectedGlider" placeholder="Flugzeug-Muster">
+				<mat-autocomplete #auto="matAutocomplete">
+					<mat-option *ngFor="let type of filteredGliderTypes|async" [value]="type.name">
+						<span>{{ type.name }}</span>
+					</mat-option>
+				</mat-autocomplete>
+			</mat-form-field>
+		</div>
+
 		<div *ngFor="let tp of turnpoints, let i=index" class="turnpoint">
 			<div *ngIf="tp != null">{{tp?.Time | date:'hh:mm:ss'}} {{tp?.Latitude|coord:'N' }}, {{ tp?.Longitude|coord:'E'}} </div>
 			<div *ngIf="tp == null">nicht erreicht</div>
 
-			<div class="pin-button" (click)="editTurnpointLocation(i)"> <md-icon class="md-24">edit_location</md-icon></div>
+			<div class="pin-button" (click)="editTurnpointLocation(i)">
+				<mat-icon class="md-24">edit_location</mat-icon>
+			</div>
 		</div>
-		<br><br>
-		<md-select [(ngModel)]="selectedGlider" placeholder="Flugzeug" style="width:100%">
-			<md-option *ngFor="let type of gliderTypes" [value]="type.name">{{type.name}}</md-option>
-		</md-select>
+		<br>
+		<br>
+
+
+
 		<div class="button-footer">
-			<button md-icon-button md-tooltip="Flug löschen" (click)="onDeleteButtonClicked()">
-				<md-icon class="md-24">delete</md-icon>
+			<button mat-icon-button mat-tooltip="Flug löschen" (click)="onDeleteButtonClicked()">
+				<mat-icon class="md-24">delete</mat-icon>
 			</button>
 
-			<button md-icon-button md-tooltip="Neu berechnen" (click)="recalculate()">
-				<md-icon class="md-24">refresh</md-icon>
+			<button mat-icon-button mat-tooltip="Neu berechnen" (click)="recalculate()">
+				<mat-icon class="md-24">refresh</mat-icon>
 			</button>
-			<button md-icon-button md-tooltip="Speichern" (click)="save()">
-				<md-icon class="md-24">done</md-icon>
+			<button mat-icon-button md-tooltip="Speichern" (click)="save()">
+				<mat-icon class="md-24">done</mat-icon>
 			</button>
 		</div>
 
-	
+
+
 	</div>
-  	<div class="progressbar" *ngIf="isLoading">
-			<md-progress-bar mode="indeterminate" color="accent"></md-progress-bar>
-		</div>
+	<div class="progressbar" *ngIf="isLoading">
+		<mat-progress-bar mode="indeterminate" color="accent"></mat-progress-bar>
+	</div>
 </div>

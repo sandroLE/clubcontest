@@ -36,5 +36,7 @@ namespace SampleMvcApp.DataModels
 		public string GliderType { get; set; }
 
 		public double Handicap { get; set; }
-    }
+
+	  public string PilotName {get;set;}
+	}
 }

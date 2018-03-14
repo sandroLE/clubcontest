@@ -19,7 +19,7 @@
 
   <tr *ngFor="let result of totals">
     <td>{{result.total}}</td>
-    <td>{{result.user.Name}}</td>
+    <td>{{result.pilotName}}</td>
     <td *ngFor="let day of result.days"> {{day.score}} </td>
   </tr>
 </table>

@@ -5,7 +5,7 @@ import { TaskScoringService } from './../../services/taskScoring.service';
 import { MapService } from './../../services/map.service';
 import { GeoUtilService } from './../../services/geoUtil.service';
 import { ITask, ITaskPoint } from './../../models/task';
-import { IFlight, ILoggerPoint } from './../../models/flight';
+import { IFlight, ILoggerPoint, IFlightScoring } from './../../models/flight';
 import { IDay } from './../../models/day';
 import { Http, Headers, RequestOptions, Response } from '@angular/http';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,12 +20,10 @@ import 'leaflet-geometryutil';
 })
 export class CompetitionDayComponent {
 
-  private day: IDay = null;
-  private isMapVisible = true;
-  private isInProgress = false;
-  public selectedFlightIds: number[] = [];
-  private loadingFlights: number[] = [];
-  private expandedFlight: number = null;
+  public day: IDay = null;
+  public isMapVisible = true;
+  public isInProgress = false;
+  public expandedFlight: number = null;
   public isSideBarHidden = false;
   public sliderMinTime = 0;
   public sliderMaxTime = 100;
@@ -45,7 +43,7 @@ export class CompetitionDayComponent {
     , private flightService: FlightService
     , private apiService: ApiService
     , private router: Router
-    , private userService: UserService) { }
+    , public userService: UserService) { }
 
   ngOnChanges() {
     this.mapService.clearMap();
@@ -74,6 +72,7 @@ export class CompetitionDayComponent {
 
 
   private loadDay(dayId: number) {
+    console.log("load day", dayId);
     this.isMapVisible = false;
     this.hasError = false;
     var url = this.apiService.apiBaseUrl + "/Day/Get?id=" + dayId
@@ -84,7 +83,10 @@ export class CompetitionDayComponent {
           this.hasError = true;
         }
         else {
-          this.day.Flights.forEach(f => this.flightService.fix(f));//TODO: move to service or find better solution
+          this.day.Flights.forEach((f: IFlight, index: number) => {
+            this.flightService.fix(f);
+            f.color = this.getColor(index);
+          });//TODO: move to service or find better solution
           this.setScores();
           this.mapService.showTask(this.day.XcSoarTask);
         }
@@ -109,9 +111,6 @@ export class CompetitionDayComponent {
         let scoring = this.scoring.getFlightScoring(uploadedFlight, this.day.XcSoarTask);
         this.flightService.updateFlightScoring(uploadedFlight, scoring).subscribe((updatedFlight) => {
           this.day.Flights = [...this.day.Flights, updatedFlight];
-          this.selectedFlightIds = [];
-
-
           this.expandFlight(updatedFlight);
         });
       }
@@ -119,65 +118,53 @@ export class CompetitionDayComponent {
   }
 
 
-  private toggleSelect(flight: IFlight) {
-    console.log("toggleSelect");
-    if (this.selectedFlightIds.indexOf(flight.Id) < 0) {
-      this.selectFlight(flight);
-    }
-    else {
-      this.deselectFlight(flight);
-    }
-  }
-
   private deselectFlight(flight: IFlight) {
-    console.log("deselectFlight");        
-    this.selectedFlightIds = this.removeFromArray(this.selectedFlightIds, flight.Id);
     this.mapService.clearFlights();
-      this.day.Flights
-        .filter(x => x.Id != flight.Id && this.selectedFlightIds.indexOf(x.Id) >= 0)
-        .forEach((f, i) => this.mapService.addFlight(f, this.getColor(this.day.Flights.indexOf(f))));
+    this.day.Flights
+      .filter(x => x.isSelected)
+      .forEach((f, i) => this.mapService.addFlight(f, {color: f.color }));
     this.initializeSliderValues();
   }
 
-  private selectFlight(flight: IFlight): Observable<IFlight> {
-    console.log("selectFlight");    
-    this.loadingFlights.push(flight.Id);
-    this.selectedFlightIds.push(flight.Id);
-    var obs = this.flightService.getFlight(flight.Id);
+  private selectFlight(flight: IFlight, isSelected: boolean): Observable<IFlight> {
+    flight.isSelected = isSelected;
+    flight.isLoading = true;
+
+    var obs: Observable<IFlight>;
+    if (isSelected) {
+      obs = this.flightService.getFlight(flight.Id);
+    }
+    else {
+      obs = Observable.of(flight);
+    }
 
     obs.subscribe(loadedFlight => {
-      console.log("DayComponent::selectFlight::loaded");
-      
       this.isInProgress = false;
-      this.loadingFlights = this.loadingFlights.filter(x => x != loadedFlight.Id);      
-     // this.mapService.addFlight(loadedFlight);      
+      loadedFlight.isLoading = false;
+      loadedFlight.isSelected = isSelected;
+      loadedFlight.color = flight.color || "red";
       this.replace(loadedFlight);
-
       this.mapService.clearFlights();
-      this.day.Flights
-        .filter(x => this.selectedFlightIds.indexOf(x.Id) >= 0)
-        .forEach((f, i) => this.mapService.addFlight(f, this.getColor(this.day.Flights.indexOf(f))));
-
-        this.initializeSliderValues();
-
+      this.day.Flights.filter(x => x.isSelected).forEach((f, i) => this.mapService.addFlight(f, {color: f.color }));
+      this.initializeSliderValues();
     });
     return obs;
   }
 
-  private initializeSliderValues(){
-      var selectedFlights = this.day.Flights.filter(x => x.Points != null && x.Points.length > 0 && this.selectedFlightIds.indexOf(x.Id) >= 0 );
-      if (selectedFlights.length > 0){      
-        var first = selectedFlights.sort((a,b) => a.Points[0].Time.getTime() - b.Points[0].Time.getTime())[0];  
-        this.sliderMinTime =  first.Points[0].Time.getTime();
-        var last = selectedFlights.sort((a,b) => a.Points[a.Points.length-1].Time.getTime() - b.Points[b.Points.length-1].Time.getTime())[selectedFlights.length-1];  
-        this.sliderMaxTime = this.sliderTime = last.Points[last.Points.length-1].Time.getTime();     
-        this.sliderDisplayTime = this.getFormatedTime(new Date(this.sliderTime));
-        this.sliderChanged();
-      }
-      
+  private initializeSliderValues() {
+    var selectedFlights = this.day.Flights.filter(x => x.Points != null && x.Points.length > 0 && x.isSelected);
+    if (selectedFlights.length > 0) {
+      var first = selectedFlights.sort((a, b) => a.Points[0].Time.getTime() - b.Points[0].Time.getTime())[0];
+      this.sliderMinTime = first.Points[0].Time.getTime();
+      var last = selectedFlights.sort((a, b) => a.Points[a.Points.length - 1].Time.getTime() - b.Points[b.Points.length - 1].Time.getTime())[selectedFlights.length - 1];
+      this.sliderMaxTime = this.sliderTime = last.Points[last.Points.length - 1].Time.getTime();
+      this.sliderDisplayTime = this.getFormatedTime(new Date(this.sliderTime));
+      this.sliderChanged();
+    }
+
   }
 
-  private getColor(i:number):string{
+  private getColor(i: number): string {
     var colors = [];
     colors[0] = "#00d034";
     colors[1] = "blueviolet";
@@ -192,7 +179,7 @@ export class CompetitionDayComponent {
     colors[10] = "lightseagreen";
     colors[11] = "coral";
     colors[12] = "deepskyblue";
-    return colors[i%13];
+    return colors[i % 13];
   }
 
 
@@ -205,21 +192,20 @@ export class CompetitionDayComponent {
   }
 
   private collapseFlight(flight: IFlight) {
-    console.log("DayComponent::collapseFlight");
-    this.expandedFlight = null;
+    flight.isExpanded = false;
   }
 
   private expandFlight(flight: IFlight) {
-    console.log("DayComponent::flightExpanded");   
-    this.selectedFlightIds = [];
-    this.selectFlight(flight).subscribe(() => {      
-      this.expandedFlight = flight.Id;
-    });  
+    console.log("DayComponent::flightExpanded");
+
+    this.selectFlight(flight, true).subscribe((f) => {
+      f.isExpanded = true;
+    });
   }
 
   private onTurnpointsChanged(flight: IFlight): void {
     this.mapService.clearFlights();
-    this.mapService.addFlight(flight,  this.getColor(this.day.Flights.indexOf(flight)), true);
+    this.mapService.addFlight(flight, { color: this.getColor(this.day.Flights.indexOf(flight)), showMarker:true });
   }
 
   private applyFlightUpdates(flight: IFlight): void {
@@ -232,7 +218,7 @@ export class CompetitionDayComponent {
   private deleteFlight(flight: IFlight) {
     this.flightService.deleteFlight(flight.Id).subscribe(() => {
       this.loadDay(this.dayId);
-    });
+    }, (error) => console.error(error));
   }
 
   private addToArray(array: number[], value: number) {
@@ -250,33 +236,36 @@ export class CompetitionDayComponent {
     return array;
   }
 
-  public hideSidebar(){
+  public hideSidebar() {
     this.isSideBarHidden = true;
   }
 
-  public showSidebar(){
+  public showSidebar() {
     this.isSideBarHidden = false;
   }
 
-  public sliderMouseOver(){
+  public sliderMouseOver() {
     this.mapService.map.dragging.disable();
   }
 
-  public sliderMouseOut(){
+  public sliderMouseOut() {
     this.mapService.map.dragging.enable();
   }
 
-  public sliderChanged(){
+  public sliderChanged() {
     this.mapService.clearFlights();
-    this.day.Flights
-        .filter(x => this.selectedFlightIds.indexOf(x.Id) >= 0)
-        .forEach((f, i) => this.mapService.addFlight(f, this.getColor(this.day.Flights.indexOf(f)), true, this.sliderTime));
-    this.sliderDisplayTime = this.getFormatedTime(new Date(this.sliderTime)); 
+    let selectedFlights = this.day.Flights.filter(x => x.isSelected);
+    
+    let showMarker = this.sliderMaxTime == this.sliderTime && selectedFlights.length == 1;
+    let traceTime = this.sliderMaxTime == this.sliderTime ? null : this.sliderTime;
+    let trackLength = selectedFlights.length > 1 ? 1000000 : null;
+    selectedFlights.forEach((f, i) => this.mapService.addFlight(f, { color: f.color, trackEnd: traceTime, trackLength:trackLength, showMarker: showMarker}));
+    this.sliderDisplayTime = this.getFormatedTime(new Date(this.sliderTime));
   }
 
-  private getFormatedTime(time:Date):string{
-     var options = {  hour: '2-digit', minute: '2-digit' };
-    return new Intl.DateTimeFormat('de-DE', options).format(time); 
+  private getFormatedTime(time: Date): string {
+    var options = { hour: '2-digit', minute: '2-digit' };
+    return new Intl.DateTimeFormat('de-DE', options).format(time);
   }
 }
 

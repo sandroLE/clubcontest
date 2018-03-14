@@ -47,7 +47,9 @@ namespace SampleMvcApp.Controllers
 			return new JsonResult(day, serializerSettings);
 		}
 
-		[Authorize]
+#if !DEBUG
+		[Authorize] 
+#endif
 		[HttpPost]		
 		public JsonResult New([FromBody]Day day)
 		{
@@ -61,8 +63,9 @@ namespace SampleMvcApp.Controllers
 			return new JsonResult(day, serializerSettings);
 		}
 
-		[HttpPost]
-		[Authorize]
+#if !DEBUG
+		[Authorize] 
+#endif
 		public IActionResult UploadTask(IFormFile files, int dayId)
 		{
 			var stream = new MemoryStream();
@@ -99,7 +102,9 @@ namespace SampleMvcApp.Controllers
 			return File(ms, "text/plain", $"task_{day.Competition.Name}_{day.Date:yyMMdd}.tsk");
 		}
 
-		[Authorize]
+#if !DEBUG
+		[Authorize] 
+#endif
 		[HttpDelete]
 		public IActionResult Delete(int id)
 		{

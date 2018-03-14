@@ -55,7 +55,7 @@ export class TaskComponent {
     var minTime = task.AatMinTime / 60 / 60;
     var title = `${distance}km`;
     if (task.Type == 'AAT'){
-      title += `AAT (${minTime}h)`;
+      title += ` AAT (${minTime}h)`;
     }
     else{
       title += " (Racing Task)";

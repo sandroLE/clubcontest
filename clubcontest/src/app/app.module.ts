@@ -1,3 +1,4 @@
+import {MatIconModule, MatProgressSpinnerModule, MatButtonModule, MatMenuModule, MatSelectModule, MatProgressBarModule, MatInputModule, MatAutocompleteModule, MatCheckboxModule} from '@angular/material';
 import { UserProfileComponent } from './components/user-profile/userProfile.component';
 import { CoordinatePipe } from './pipes/coordinate.pipe';
 import { CompetitionSettingsComponent } from './components/competition-settings/competition-settings.component';
@@ -14,9 +15,9 @@ import { ApiService } from './services/api.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
-import { MaterialModule } from '@angular/material';
+
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppComponent } from './app.component';
@@ -31,12 +32,7 @@ import { TaskPointComponent } from './components/task-point/task-point.component
 const appRoutes: Routes = [
   { path: '', component: CreateCompetitionComponent },    
   { path: 'Competition/New', component: CreateCompetitionComponent },  
-  //{ path: 'Competition/:name', component: CompetitionComponent },
-  { path: 'Competition/:name', component: CompetitionComponent,
-   //   children: [ 
-   //     { path: 'total', component: TotalResultComponent},                
-   //   ]     
-  },
+  { path: 'Competition/:name', component: CompetitionComponent },
   { path: 'Competition/:name/:dayId', component: CompetitionComponent },
   { path: 'Account/Settings', component: UserProfileComponent }  
 ]
@@ -56,13 +52,13 @@ const appRoutes: Routes = [
     
     
   ],
-  imports: [
-   MaterialModule.forRoot(),
+  imports: [   
     RouterModule.forRoot(appRoutes),
     BrowserModule,
-    FormsModule,
+    FormsModule,ReactiveFormsModule,
     HttpModule,  
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    MatMenuModule,MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatSelectModule, MatProgressBarModule, MatInputModule, MatAutocompleteModule, MatCheckboxModule
   ],
   exports:[],
   providers: [MapService, GeoUtilService, TaskScoringService, FlightService, ApiService, UserService],

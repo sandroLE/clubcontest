@@ -29,3 +29,6 @@ ClubContestMvcApp/wwwroot/js/
 ClubContestMvcApp/bin/Debug/netcoreapp1.0/ClubContestMvcApp.deps.json
 ClubContestMvcApp/bin/
 ClubContestMvcApp/obj/
+.vs/
+ClubContest.sln.DotSettings.user
+ClubContestMvcApp/Properties/PublishProfiles/tellingme - Web Deploy.pubxml.user

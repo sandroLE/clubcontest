@@ -5,15 +5,15 @@
 	
 
 	<div class="menu" *ngIf="userService.currentUser.isAdmin">
-		<button md-icon-button [mdMenuTriggerFor]="menu">
-			<md-icon>more_vert</md-icon>
+		<button mat-icon-button [matMenuTriggerFor]="menu">
+			<mat-icon>more_vert</mat-icon>
 		</button>
-		<md-menu #menu="mdMenu">
-			<button md-menu-item (click)="deleteDay()">Wertungstag löschen</button>
+		<mat-menu #menu="matMenu">
+			<button mat-menu-item (click)="deleteDay()">Wertungstag löschen</button>
 			<!--<button md-menu-item (click)="changeDate()">Datum ändern</button>-->
-		</md-menu>
+		</mat-menu>
 	</div>
-	<div>
+	<div>		
 		<app-task [task]="day?.XcSoarTask" (taskUploaded)="onTaskUploaded()" [dayId]="day?.Id" [collapsed]="day?.Flights.length > 0"></app-task>
 		<div class="flight-list" *ngIf="day?.XcSoarTask">
 
@@ -24,31 +24,34 @@
 					<div style="flex-grow: 1"> </div>
 				</div>
 			</div>
-
+			
 			<app-flight *ngFor="let flight of day?.Flights | orderbyScore; let i=index" 
 			             [flight]="flight"
 			             [task]="day?.XcSoarTask"
-			             [selected]="selectedFlightIds.indexOf(flight.Id) >= 0"
-			             [isLoading]="loadingFlights.indexOf(flight.Id) >= 0"
-			             [isExpanded]="expandedFlight == flight.Id"
+						 [selected]="flight.isSelected"						 
+						 (selectedChange)="selectFlight(flight, $event)"
+			             [isLoading]="flight.isLoading"
+			             [isExpanded]="flight.isExpanded"
 			             (expand)="expandFlight(flight)"
-			             (collapse)="collapseFlight(flight)"
-			             (clicked)="toggleSelect(flight)"
+			             (collapse)="collapseFlight(flight)"			             
 			             (changed)="applyFlightUpdates($event)"
 			             (turnpointsChanged)="onTurnpointsChanged($event)"
 			             (delete)="deleteFlight(flight)"
-						 [index]="i">
+						 [index]="i"
+						 [color]="flight.color">
 			</app-flight>
+
+			
 
 
 			<div class="uploadSection">
 				<form>
 					<input type="file" #flightFile (change)="uploadFlight(flightFile.files)" accept=".igc">
-					<button md-raised-button color="accent" (click)="flightFile.click()" [disabled]="!userService.currentUser.isLoggedIn">Flug hochladen</button>
+					<button mat-raised-button color="accent" (click)="flightFile.click()" [disabled]="!userService.currentUser.isLoggedIn">Flug hochladen</button>
 					<div *ngIf="!userService.currentUser.isLoggedIn">
 						<br>Melde dich an, um Flüge hochladen zu können. <a href="./Account/Login">Login</a>
 					</div>
-					<md-progress-spinner *ngIf="isInProgress" mode="indeterminate" color="accent"></md-progress-spinner>
+					<mat-progress-spinner *ngIf="isInProgress" mode="indeterminate" color="accent"></mat-progress-spinner>
 				</form>
 			</div>
 			<br>
@@ -65,10 +68,10 @@
 </div>
 
 <div id="mapid">
-	<div *ngIf="!isSideBarHidden" class="grabber" (click)="hideSidebar()">		<md-icon>navigate_before</md-icon>	</div>
-	<div *ngIf="isSideBarHidden" class="grabber" (click)="showSidebar()">		<md-icon>navigate_next</md-icon>	</div>
+	<div *ngIf="!isSideBarHidden" class="grabber" (click)="hideSidebar()">		<mat-icon>navigate_before</mat-icon>	</div>
+	<div *ngIf="isSideBarHidden" class="grabber" (click)="showSidebar()">		<mat-icon>navigate_next</mat-icon>	</div>
 
-	<div class="slider" (mouseover)="sliderMouseOver()" (mouseout)="sliderMouseOut()" *ngIf="selectedFlightIds.length > 0">		
+	<div class="slider" (mouseover)="sliderMouseOver()" (mouseout)="sliderMouseOut()" >		
 		<input  type="range" [min]="sliderMinTime" [max]="sliderMaxTime" [(ngModel)]="sliderTime" (input)="sliderChanged()"/>
 		<br>
 		{{sliderDisplayTime}}

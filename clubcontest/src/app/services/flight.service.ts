@@ -6,6 +6,7 @@ import { Http, Headers, RequestOptions, Response } from '@angular/http';
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/publishReplay'
 import 'rxjs/add/operator/publish'
+import 'rxjs/Rx';
 
 @Injectable()
 export class FlightService {
@@ -36,7 +37,7 @@ export class FlightService {
         if (flight.Points){
             flight.Points.forEach(p => { p.Time = new Date(p.Time); });      
         }
-
+        flight.isSelected = false;
         flight.turnPoints = JSON.parse(flight.TurnPoints, (key, value) => { 
             if (key == "Time"){
                 return new Date(value);
@@ -78,13 +79,25 @@ export class FlightService {
                 finished: f.Finished,
                 turnPoints: JSON.stringify(f.turnPoints),
                 gliderType: f.GliderType,
-                handicap: f.Handicap > 0 ? f.Handicap : 1
+                handicap: f.Handicap > 0 ? f.Handicap : 1,
+                pilotName:f.PilotName
             }, options).map(x => this.fix(x.json()));
     }
 
     public deleteFlight(id: number):Observable<Response> {
-        var url = "/Flight/Delete?id=" + id;
-        return this.http.delete(url);
+
+        var headers = new Headers({
+            'Content-Type': 'application/json',
+        });
+
+        let options = new RequestOptions({
+            headers: headers
+        });
+
+        var url = this.apiService.apiBaseUrl + "/Flight/Delete?id=" + id;
+        return this.http.delete(url, options);
+        
+        
     }
 
 

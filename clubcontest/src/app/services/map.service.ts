@@ -4,8 +4,11 @@ import { GeoUtilService } from './geoUtil.service';
 import { ITask, ITaskPoint } from './../models/task';
 import { Http } from '@angular/http';
 import { Injectable, EventEmitter } from '@angular/core';
-import 'rxjs/add/operator/takeUntil';
 import { Subscription } from "rxjs/Subscription";
+import * as L from 'leaflet';
+import { latLng } from 'leaflet';
+import  'rxjs/Rx';
+
 
 @Injectable()
 export class MapService {
@@ -134,7 +137,13 @@ export class MapService {
 
 
   private createCircle(taskPoint: ITaskPoint, isEditableStyle = false): L.Layer {
-    var options: L.CircleOptions = { radius: taskPoint.ObservationZone.Radius || taskPoint.ObservationZone.Length / 2 };
+
+    var radius 
+      = taskPoint.ObservationZone.Type !== "Line" 
+      ? taskPoint.ObservationZone.Radius 
+      : taskPoint.ObservationZone.Length / 2;
+  
+    var options: L.CircleMarkerOptions = { radius };
     if (isEditableStyle) {
       options.color = "yellow";
       options.opacity = 0.3;
@@ -179,7 +188,8 @@ export class MapService {
 
     var s = prevTp.add(tpNext);
     var tpLatLng = L.latLng(tp.Latitude, tp.Longitude);
-    var semicircle: any = L.circle(tpLatLng, { radius: 10000 });
+    debugger;
+    var semicircle: any = (<any>L).semiCircle([tp.Latitude, tp.Longitude], { radius: 10000 });
     semicircle.setDirection(s.angleDeg(), 90);
 
 
@@ -191,27 +201,40 @@ export class MapService {
   private flightLayers: { [id: number]: L.LayerGroup } = {};
 
 
-  public addFlight(flight: IFlight, color: string, updateCache = false, filterToTime: number = null): L.Layer {
+  public addFlight(flight: IFlight, options:IAddFlightOptions): L.Layer {
+
     if (flight == null) {
       return;
     }
-    if (this.flightLayers[flight.Id] == null || updateCache) {
-      this.flightLayers[flight.Id] = this.createFlightLayer(flight, color, filterToTime);
+
+    options.color = options.color || "red";
+    options.showMarker = options.showMarker != null ? options.showMarker : true;
+    options.updateCache = options.updateCache != null ? options.updateCache : true;
+
+    if (this.flightLayers[flight.Id] == null || options.updateCache) {
+      this.flightLayers[flight.Id] = this.createFlightLayer(flight,options.color, options.trackEnd, options.trackLength, options.showMarker);
     }
     var flightLayer = this.flightLayers[flight.Id];
     this.flightLayerGroup.addLayer(flightLayer)
   }
 
 
-  private createFlightLayer(flight: IFlight, color: string, filterToTime: number): L.LayerGroup {
+  private createFlightLayer(flight: IFlight, color: string, trackEnd: number, trackLength:number, showMarker:boolean): L.LayerGroup {
     var points = (<any[]>flight.Points)
-      .filter((x: ILoggerPoint) => { return filterToTime == null || x.Time.getTime() < filterToTime })
-      .map((x) => { return [x.Latitude, x.Longitude] });
+      .filter((x: ILoggerPoint) => 
+      { 
+        return trackEnd == null 
+        || trackLength == null && x.Time.getTime() < trackEnd
+        || ((trackEnd - trackLength) < x.Time.getTime() && x.Time.getTime() < trackEnd) 
+      })
+      .map((x) => { return latLng(x.Latitude, x.Longitude ) });
+    
+    
     var polyline = L.polyline(points, { color: color });
     let flightLGroup = L.layerGroup([polyline]);
 
-    if (flight.turnPoints != null) {
-      flight.turnPoints.filter(x => x != null).forEach((x: ILoggerPoint) => {
+    if (showMarker && flight.turnPoints != null) {
+      flight.turnPoints.filter(x => x != null).forEach((x: ILoggerPoint) => {        
         flightLGroup.addLayer(L.marker(L.latLng(x.Latitude, x.Longitude)));
       });
     }
@@ -440,3 +463,14 @@ class TaskLayer {
 
 }
 declare var Victor;
+
+
+
+export interface IAddFlightOptions
+{
+  color?: string
+  updateCache?:boolean;
+  trackLength?: number;  
+  trackEnd?: number;
+  showMarker?:boolean;
+}

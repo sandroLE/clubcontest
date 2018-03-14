@@ -9,7 +9,9 @@ using SampleMvcApp.Extensions;
 
 namespace SampleMvcApp.Controllers
 {
-	[Authorize]
+#if !DEBUG
+		[Authorize] 
+#endif
 	public class UserController : Controller
 	{
 		private readonly DatabaseContext _dbContext;

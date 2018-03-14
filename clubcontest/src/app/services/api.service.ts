@@ -1,8 +1,10 @@
 import { ITask } from './../models/task';
 import { ICompetition } from './../models/competition';
-import { Observable } from 'rxjs/Observable';
+
+import 'rxjs/Rx'
 import { Http, Response, Headers, RequestOptions } from '@angular/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/Rx';
 
 @Injectable()
 export class ApiService {
@@ -18,15 +20,9 @@ export class ApiService {
     for (var i = 0; i < files.length; i++) {
       data.append(files[i].name, files[i]);
     }
-    var headers = new Headers({
-      'Content-Type': 'multipart/form-data',
-    });
-
-    let options = new RequestOptions({
-      headers: headers
-    })
-
-    return this.http.post(url, data, headers);
+    var headers = new Headers();
+    //headers.append("Content-Type", 'multipart/form-data');      
+    return this.http.post(url, data,  { headers: headers });
   }
 
   public updateTask(dayId:number, task:ITask){

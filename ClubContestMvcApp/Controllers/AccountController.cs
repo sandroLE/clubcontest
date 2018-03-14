@@ -12,18 +12,20 @@ namespace SampleMvcApp.Controllers
 {
 	public class AccountController : Controller
 	{
-        private readonly DatabaseContext _dbContext;
+		private readonly DatabaseContext _dbContext;
 
-        public AccountController(DatabaseContext dbContext)
-	    {
-            _dbContext = dbContext;
-        }
+		public AccountController(DatabaseContext dbContext)
+		{
+			_dbContext = dbContext;
+		}
 		public IActionResult Login(string returnUrl = "/")
 		{
 			return new ChallengeResult("Auth0", new AuthenticationProperties() { RedirectUri = returnUrl });
 		}
 
-		[Authorize]
+#if !DEBUG
+		[Authorize] 
+#endif
 		public IActionResult Logout()
 		{
 			HttpContext.Authentication.SignOutAsync("Auth0");
@@ -32,7 +34,9 @@ namespace SampleMvcApp.Controllers
 			return RedirectToAction("New", "Competition");
 		}
 
-		[Authorize]
+#if !DEBUG
+		[Authorize] 
+#endif
 		public IActionResult Profile()
 		{
 			return View(new UserProfileViewModel()
@@ -48,19 +52,23 @@ namespace SampleMvcApp.Controllers
 		/// application to see the in claims populated from the Auth0 ID Token
 		/// </summary>
 		/// <returns></returns>
-		[Authorize]
+#if !DEBUG
+		[Authorize] 
+#endif
 		public IActionResult Claims()
 		{
 			return View();
 		}
 
-		[Authorize]
+#if !DEBUG
+		[Authorize] 
+#endif
 		public IActionResult Settings()
 		{
-            var currentUser = _dbContext.User.FirstOrDefault(x => x.Auth0Id == User.GetId());
-            ViewBag.UserName = currentUser?.Name ?? "GAST";
-            ViewBag.UserId = currentUser?.Id ?? -1;
-            return View();
+			var currentUser = _dbContext.User.FirstOrDefault(x => x.Auth0Id == User.GetId());
+			ViewBag.UserName = currentUser?.Name ?? "GAST";
+			ViewBag.UserId = currentUser?.Id ?? -1;
+			return View();
 		}
 	}
 }

@@ -4,6 +4,7 @@ import { GeoUtilService } from './../geoUtil.service';
 import { MapService } from './../map.service';
 import { ITask, ITaskPoint } from './../../models/task';
 import { IFlight, IFlightScoring, ILoggerPoint } from './../../models/flight';
+import * as L from 'leaflet';
 
 declare var turf;
 
