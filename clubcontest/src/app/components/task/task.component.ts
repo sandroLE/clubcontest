@@ -32,7 +32,6 @@ export class TaskComponent {
     this.isEditorEnabled = false;
     this.taskBackup = null;
     this.title = this.getTaskTitle(this._task);
-    console.log(value);
   };
 
   @Input() dayId: number;
@@ -140,6 +139,16 @@ export class TaskComponent {
       Type: taskpoint.Type
     }
     return backup;
+  }
+
+  createTask(){
+
+    let center = this.mapService.getCenter();
+    this.apiService.createNewTask(this.dayId, center.lat, center.lng).subscribe((task) => {
+      console.log("created task");
+      this._task = task;
+      this.enableEditMode();
+    });
   }
 
 }

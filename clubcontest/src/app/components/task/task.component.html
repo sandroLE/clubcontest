@@ -74,9 +74,10 @@
     <div class="upload" *ngIf="userService.currentUser.isAdmin">
       <form>
         <input type="file" #file (change) = "uploadTask(file.files)" accept=".tsk">
-          <button *ngIf="task==null || task.TaskPoints.length == 0" mat-raised-button color="accent" (click)="file.click()">Aufgabe hochladen</button>          
+          <button *ngIf="task==null || task.TaskPoints.length == 0" mat-raised-button (click)="file.click()">Aufgabe hochladen</button>          
       </form>
     </div>
+    <button *ngIf="task==null || task.TaskPoints.length == 0" mat-raised-button color="accent" (click)="createTask()">Aufgabe erstellen</button>          
   
     <a *ngIf="task != null && task.TaskPoints.length > 0 && !isEditorEnabled" mat-raised-button  [href]="'Day/DownloadTask?dayId=' + dayId" style="height: 36px">
     <i class="material-icons">file_download</i>

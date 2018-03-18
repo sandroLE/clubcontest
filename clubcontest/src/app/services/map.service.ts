@@ -13,6 +13,7 @@ import  'rxjs/Rx';
 @Injectable()
 export class MapService {
 
+
   private _map: L.Map;
   public get map() { return this._map }
   private taskLayer: L.Polyline;
@@ -457,6 +458,11 @@ export class MapService {
     this.insertedTaskPoint = null;
     this.disposableSubscriptions.forEach(s => s.unsubscribe()); //TODO: how to dispose it correctly?
   }
+
+  getCenter(): L.LatLng {
+    return this._map.getCenter();
+  }
+
 }
 
 class TaskLayer {

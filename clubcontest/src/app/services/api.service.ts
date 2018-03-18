@@ -25,6 +25,12 @@ export class ApiService {
     return this.http.post(url, data,  { headers: headers });
   }
 
+  public createNewTask(dayId:number,  lat:number, lng:number): Observable<ITask> {
+    var url = this.apiBaseUrl + "/Day/CreateTask";
+    return this.http.post(url, {dayId, "lat": lat, "lng": lng }).map(x => x.json());
+    
+  }
+
   public updateTask(dayId:number, task:ITask){
     var url = this.apiBaseUrl + "/Day/UpdateTask";
     return this.http.post(url, {dayId:dayId, task: task});

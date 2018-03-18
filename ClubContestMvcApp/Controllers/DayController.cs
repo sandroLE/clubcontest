@@ -13,6 +13,7 @@ using SampleMvcApp.Database;
 using SampleMvcApp.DataModels;
 using SampleMvcApp.Entities;
 using SampleMvcApp.Extensions;
+using static System.FormattableString;
 
 namespace SampleMvcApp.Controllers
 {
@@ -152,6 +153,60 @@ namespace SampleMvcApp.Controllers
 		{
 			public XcSoarTask Task { get; set; }
 			public int DayId	 { get; set; }
+		}
+
+
+		public IActionResult CreateTask([FromBody] CreateTaskModel model)
+		{
+			var taskDefinition = Invariant(
+				$@"<Task type=""AAT"" task_scored=""0"" aat_min_time=""10800"" start_max_speed=""60"" start_max_height=""0"" start_max_height_ref=""MSL"" finish_min_height=""0"" finish_min_height_ref=""AGL"" fai_finish=""0"" min_points=""2"" max_points=""13"" homogeneous_tps=""0"" is_closed=""0"">
+			<Point type=""Start"">
+				<Waypoint name=""Start"" id=""0"" comment="""" altitude=""-999.0"">
+					<Location longitude=""{model.Lng}"" latitude=""{model.Lat}""/>
+				</Waypoint>
+				<ObservationZone type=""Line"" length=""10000.0""/>
+			</Point>
+			<Point type=""Area"">
+				<Waypoint name=""WP1"" id=""0"" comment="""" altitude=""-999.0"">
+					<Location longitude=""{model.Lng}"" latitude=""{model.Lat + 0.5}""/>
+				</Waypoint>
+				<ObservationZone type=""Cylinder"" radius=""10000.0""/>
+			</Point>
+			<Point type=""Area"">
+				<Waypoint name=""WP2"" id=""0"" comment="""" altitude=""128.0"">
+					<Location longitude=""{model.Lng + 0.5}"" latitude=""{model.Lat + 0.25}""/>
+				</Waypoint>
+				<ObservationZone type=""Cylinder"" radius=""10000.0""/>
+			</Point>
+			<Point type=""Finish"">
+				<Waypoint name=""Finish"" id=""0"" comment="""" altitude=""-999.0"">
+					<Location longitude=""{model.Lng}"" latitude=""{model.Lat}""/>
+				</Waypoint>
+				<ObservationZone type=""Line"" length=""10000.0""/>
+			</Point>
+		</Task>");
+
+			var day = _dbContext.Days.FirstOrDefault(x => x.Id == model.DayId);
+			day.Task = taskDefinition;
+			day.TaskFileFormat = "XcSoar";
+
+			var task = XcSoarTask.Parse(taskDefinition);
+			if (task != null)
+			{
+				_dbContext.SaveChanges();
+				return Ok(task);
+			}
+			
+
+			return Ok();
+		}
+
+
+		public class CreateTaskModel
+		{
+			public double Lat { get; set; }
+			public double Lng { get; set; }
+			public int DayId { get; set; }
 		}
 
 	}
