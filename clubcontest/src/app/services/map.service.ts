@@ -43,6 +43,7 @@ export class MapService {
     L.tileLayer('https://skylines.aero/mapproxy/tiles/1.0.0/airspace+airports/{z}/{x}/{y}.png', {}).addTo(this.map);
 
     this.flightLayerGroup.addTo(this._map);
+    
     return this._map;
   }
 
@@ -482,6 +483,9 @@ export class MapService {
     return this._map.getCenter();
   }
 
+  public invalidateSize(){
+    this._map.invalidateSize();
+  }
  
 
 }

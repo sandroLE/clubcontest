@@ -9,14 +9,15 @@ import { IFlight, ILoggerPoint, IFlightScoring } from './../../models/flight';
 import { IDay } from './../../models/day';
 import { Http, Headers, RequestOptions, Response } from '@angular/http';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, HostListener } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import 'leaflet-geometryutil';
 
 @Component({
   selector: 'app-competition-day',
   templateUrl: './competition-day.component.html',
-  styleUrls: ['./competition-day.component.css']
+  styleUrls: ['./competition-day.component.css'],
+
 })
 export class CompetitionDayComponent {
 
@@ -237,10 +238,12 @@ export class CompetitionDayComponent {
 
   public hideSidebar() {
     this.isSideBarHidden = true;
+    this.onResize();
   }
 
   public showSidebar() {
     this.isSideBarHidden = false;
+    this.onResize();
   }
 
   public sliderMouseOver() {
@@ -265,6 +268,18 @@ export class CompetitionDayComponent {
   private getFormatedTime(time: Date): string {
     var options = { hour: '2-digit', minute: '2-digit' };
     return new Intl.DateTimeFormat('de-DE', options).format(time);
+  }
+
+  
+  private resizeTimeOut:any = null;
+  @HostListener('window:resize')
+  onResize() {    
+    if (this.resizeTimeOut){
+      clearTimeout(this.resizeTimeOut);
+    }
+    this.resizeTimeOut = setTimeout(() => {
+      this.mapService.invalidateSize();
+    }, 200);    
   }
 }
 

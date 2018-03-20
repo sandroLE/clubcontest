@@ -1,7 +1,6 @@
 #mapid {
      height: calc(100vh - 65px); 
-     
-     margin-top: 65px;
+         
      flex-grow: 100;
      z-index: 98;
 
@@ -98,9 +97,18 @@ input[type=file]{
 }
 
 .competition-day{
-    display: flex;
-    align-items: stretch;
-    height: 100vh
+   padding-top: 65px;
+}
+
+mat-sidenav{
+    box-shadow: 2px 0px 6px 0px #7d7d7d;    
+    max-width: 350px;
+}
+
+mat-sidenav > div{
+    width:350px;
+    overflow: auto;
+    height: 100%;
 }
 
 .skylines{
@@ -167,8 +175,7 @@ text-shadow:rgba(0, 0, 0, 0.247059) 0px -1px 0px;
 .grabber{
     position: absolute;
     width: 26px;
-    left: 0;
-    right: -13px;
+    left: 0;    
     background-color: rgba(255, 255, 255, 0.92);
     z-index: 9999;   
     top: 5px;
