@@ -45,7 +45,8 @@ CREATE TABLE [dbo].[CC_Flight] (
     [Finished]   BIT            NULL,
     [GliderType] NVARCHAR (MAX) NULL,
     [Handicap]   FLOAT (53)     DEFAULT ((1)) NOT NULL,
-    PRIMARY KEY CLUSTERED ([Id] ASC),
+    [PilotName] NVARCHAR (MAX) NULL,
+	PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Flight_Day] FOREIGN KEY ([DayId]) REFERENCES [dbo].[CC_Day] ([Id]) ON DELETE CASCADE,
     CONSTRAINT [FK_Flight_User] FOREIGN KEY ([UserId]) REFERENCES [dbo].[CC_User] ([Id])
 );

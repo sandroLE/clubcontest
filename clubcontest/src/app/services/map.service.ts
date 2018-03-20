@@ -7,11 +7,13 @@ import { Injectable, EventEmitter } from '@angular/core';
 import { Subscription } from "rxjs/Subscription";
 import * as L from 'leaflet';
 import { latLng } from 'leaflet';
-import  'rxjs/Rx';
+import 'rxjs/Rx';
+import { Color } from '../Color';
 
 
 @Injectable()
 export class MapService {
+
 
 
   private _map: L.Map;
@@ -23,7 +25,7 @@ export class MapService {
   private taskEditEvents: EventEmitter<number> = new EventEmitter<number>();
   public parsedWayPoints: { name: string, lat: number, lng: number }[] = [];
   private wayPoints: L.LayerGroup = null;
-  
+
   constructor(private geoUtil: GeoUtilService) {
     this.flightLayerGroup = L.layerGroup([]);
   }
@@ -96,20 +98,20 @@ export class MapService {
       if (tp.Type == "Start" && tp.ObservationZone.Type == "Line") {
         layer = this.geoUtil.createStartLine(task, this._map);
         if (editable) {
-          editLayer = this.createCircle(tp, true);
+          editLayer = this.createCircle(tp, true, Color.Start);
           editables.push(editLayer);
         }
       }
       else if (tp.Type == "Finish" && tp.ObservationZone.Type == "Line") {
         layer = this.geoUtil.createFinishLine(task, this._map);
         if (editable) {
-          editLayer = this.createCircle(tp, true);
+          editLayer = this.createCircle(tp, true, Color.Finish);
           editables.push(editLayer);
         }
 
       }
       else if (tp.ObservationZone.Type == "Cylinder") {
-        layer = this.createCircle(tp);
+        layer = this.createCircle(tp, null, Color.get(index));
         if (editable) {
           editables.push(layer);
         }
@@ -137,18 +139,18 @@ export class MapService {
   }
 
 
-  private createCircle(taskPoint: ITaskPoint, isEditableStyle = false): L.Layer {
-
-    var radius 
-      = taskPoint.ObservationZone.Type !== "Line" 
-      ? taskPoint.ObservationZone.Radius 
-      : taskPoint.ObservationZone.Length / 2;
-  
-    var options: L.CircleMarkerOptions = { radius };
+  private createCircle(taskPoint: ITaskPoint, isEditableStyle = false, color="yellow"): L.Layer {
+    var radius
+      = taskPoint.ObservationZone.Type !== "Line"
+        ? taskPoint.ObservationZone.Radius
+        : taskPoint.ObservationZone.Length / 2;
+    var options: L.CircleMarkerOptions = { radius, color };
     if (isEditableStyle) {
-      options.color = "yellow";
-      options.opacity = 0.3;
+      options.color = color || "yellow";
+     // options.opacity = 0.3;
     }
+
+
     var circle = L.circle([taskPoint.Latitude, taskPoint.Longitude], options);
     return circle;
   }
@@ -189,7 +191,7 @@ export class MapService {
 
     var s = prevTp.add(tpNext);
     var tpLatLng = L.latLng(tp.Latitude, tp.Longitude);
-    debugger;
+
     var semicircle: any = (<any>L).semiCircle([tp.Latitude, tp.Longitude], { radius: 10000 });
     semicircle.setDirection(s.angleDeg(), 90);
 
@@ -202,7 +204,7 @@ export class MapService {
   private flightLayers: { [id: number]: L.LayerGroup } = {};
 
 
-  public addFlight(flight: IFlight, options:IAddFlightOptions): L.Layer {
+  public addFlight(flight: IFlight, options: IAddFlightOptions): L.Layer {
 
     if (flight == null) {
       return;
@@ -213,29 +215,28 @@ export class MapService {
     options.updateCache = options.updateCache != null ? options.updateCache : true;
 
     if (this.flightLayers[flight.Id] == null || options.updateCache) {
-      this.flightLayers[flight.Id] = this.createFlightLayer(flight,options.color, options.trackEnd, options.trackLength, options.showMarker);
+      this.flightLayers[flight.Id] = this.createFlightLayer(flight, options.color, options.trackEnd, options.trackLength, options.showMarker);
     }
     var flightLayer = this.flightLayers[flight.Id];
     this.flightLayerGroup.addLayer(flightLayer)
   }
 
 
-  private createFlightLayer(flight: IFlight, color: string, trackEnd: number, trackLength:number, showMarker:boolean): L.LayerGroup {
+  private createFlightLayer(flight: IFlight, color: string, trackEnd: number, trackLength: number, showMarker: boolean): L.LayerGroup {
     var points = (<any[]>flight.Points)
-      .filter((x: ILoggerPoint) => 
-      { 
-        return trackEnd == null 
-        || trackLength == null && x.Time.getTime() < trackEnd
-        || ((trackEnd - trackLength) < x.Time.getTime() && x.Time.getTime() < trackEnd) 
+      .filter((x: ILoggerPoint) => {
+        return trackEnd == null
+          || trackLength == null && x.Time.getTime() < trackEnd
+          || ((trackEnd - trackLength) < x.Time.getTime() && x.Time.getTime() < trackEnd)
       })
-      .map((x) => { return latLng(x.Latitude, x.Longitude ) });
-    
-    
+      .map((x) => { return latLng(x.Latitude, x.Longitude) });
+
+
     var polyline = L.polyline(points, { color: color });
     let flightLGroup = L.layerGroup([polyline]);
 
     if (showMarker && flight.turnPoints != null) {
-      flight.turnPoints.filter(x => x != null).forEach((x: ILoggerPoint) => {        
+      flight.turnPoints.filter(x => x != null).forEach((x: ILoggerPoint) => {
         flightLGroup.addLayer(L.marker(L.latLng(x.Latitude, x.Longitude)));
       });
     }
@@ -293,11 +294,13 @@ export class MapService {
   /* Task editor */
   private startEditMode(task: ITask) {
     this.unbindAllEditEvents();
+    
     (<any>this).taskLayer.enableEdit();
     this._map.on('editable:drawing:move', e => this.onTaskEdit(e, task));
     this._map.on('editable:vertex:deleted', e => this.onTaskPointDeleted(e, task));
     this._map.on('editable:vertex:click', (e: any) => this.onVertexClicked(e, task));
     this._map.on('editable:vertex:dragend', (e: any) => this.onVertexDragEnd(e, task));
+    this._map.on('editable:vertex:drag', (e: any) => this.onVertexDrag(e, task));
     this._map.on('editable:middlemarker:mousedown', (e: any) => this.onMiddleMarkerMouseDown(e, task));
     this.createWaypointAndBindEvents();
   }
@@ -311,7 +314,7 @@ export class MapService {
   private createWaypointAndBindEvents() {
     this.wayPoints = L.layerGroup([]);
     var m = <any>this._map;
-    this.parsedWayPoints.forEach(wp => {
+    this.parsedWayPoints.forEach((wp) => {
       let marker = L.circleMarker([wp.lat, wp.lng], { radius: 3, color: "#88F" });
       marker.bindTooltip(wp.name);
       m.almostOver.addLayer(marker);
@@ -330,7 +333,7 @@ export class MapService {
     subscription = Observable.fromEvent(m, "almost:out").subscribe((e: any) => {
       this.nearTurnPointSnap = null;
       console.log("almost over out", this.nearTurnPointSnap);
-    });   
+    });
 
     this.disposableSubscriptions.push(subscription);
   }
@@ -365,6 +368,21 @@ export class MapService {
     }
   }
 
+  private onVertexDrag(e, task: ITask) {
+    if (e.layer instanceof (<any>L).Circle) {
+      console.log("vertex drag", e);
+
+      var latLng = e.layer.getLatLng(); //the center of the circle
+      var index = this.getTaskPointIndex(latLng, task);
+      if (index >= 0) {
+        var radius = e.layer.getRadius();
+        task.TaskPoints[index].ObservationZone.Radius = Math.floor(radius / 500) * 500;
+        task.TaskPoints[index].ObservationZone.Length = Math.floor(radius / 500) * 1000;
+        e.layer._mRadius = task.TaskPoints[index].ObservationZone.Radius;
+
+      }
+    }
+  }
 
   private onVertexDragEnd(e, task: ITask) {
     if (e.layer instanceof (<any>L).Circle) {
@@ -372,8 +390,8 @@ export class MapService {
       var index = this.getTaskPointIndex(latLng, task);
       if (index >= 0) {
         var radius = e.layer.getRadius();
-        task.TaskPoints[index].ObservationZone.Radius = Math.floor(radius / 1000) * 1000;
-        task.TaskPoints[index].ObservationZone.Length = Math.floor(radius / 1000) * 2000;
+        task.TaskPoints[index].ObservationZone.Radius = Math.floor(radius / 500) * 500;
+        task.TaskPoints[index].ObservationZone.Length = Math.floor(radius / 500) * 1000;
         this.repaintObservationZoneLayerOnEdit(task);
         this.taskEditEvents.next();
       }
@@ -432,7 +450,7 @@ export class MapService {
       setTimeout(() => this.bringTaskLayerToFront(), 100);
     }
     else {
-      debugger;
+
     }
   }
 
@@ -446,7 +464,7 @@ export class MapService {
     this.unbindAllEditEvents();
     if (this.wayPoints != null) {
       this._map.removeLayer(this.wayPoints);
-    }    
+    }
   }
 
   private unbindAllEditEvents() {
@@ -454,6 +472,7 @@ export class MapService {
     this._map.off('editable:vertex:deleted');
     this._map.off('editable:vertex:click');
     this._map.off('editable:vertex:dragend');
+    this._map.off('editable:vertex:drag');
     this._map.off('editable:middlemarker:mousedown');
     this.insertedTaskPoint = null;
     this.disposableSubscriptions.forEach(s => s.unsubscribe()); //TODO: how to dispose it correctly?
@@ -462,6 +481,8 @@ export class MapService {
   getCenter(): L.LatLng {
     return this._map.getCenter();
   }
+
+ 
 
 }
 
@@ -472,11 +493,10 @@ declare var Victor;
 
 
 
-export interface IAddFlightOptions
-{
+export interface IAddFlightOptions {
   color?: string
-  updateCache?:boolean;
-  trackLength?: number;  
+  updateCache?: boolean;
+  trackLength?: number;
   trackEnd?: number;
-  showMarker?:boolean;
+  showMarker?: boolean;
 }

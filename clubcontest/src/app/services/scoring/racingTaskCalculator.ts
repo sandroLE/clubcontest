@@ -47,7 +47,7 @@ export class RacingTaskCalculator extends TaskCalculator {
                 scorings.push(result);    
             });
         });
-debugger;
+
         return scorings.sort((a, b) => { return a.speed - b.speed }).pop();
     }
 

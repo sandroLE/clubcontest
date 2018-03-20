@@ -1,93 +1,101 @@
 <div class="task">
 
-<div style="display: flex; justify-content: space-between" *ngIf="task?.TaskPoints.length > 0" (click)="collapsed=!collapsed;">
-  <h2>{{title}}</h2>
-  <div class="expand-button" >
-    <i *ngIf="collapsed" class="material-icons">expand_more</i>
-    <i *ngIf="!collapsed" class="material-icons">expand_less</i>
-  </div>
-</div>
-
-<div *ngIf="!collapsed">
-
-  <div *ngIf="isEditorEnabled">
-  <br>
-  <br>
-  <br>
-
-    <mat-select *ngIf="task"  placeholder="Aufgabentype" [(ngModel)]="task.Type" (onClose)="taskTypeChanged()">
-      <mat-option [value]="'AAT'">AAT</mat-option>
-      <mat-option [value]="'RT'">Racing</mat-option>
-    </mat-select>
-
-  <br>
-  <br>
-  <br>
-
-      <mat-select *ngIf="task && task.Type == 'AAT'"  placeholder="Mindestaufgabenzeit" [(ngModel)]="task.AatMinTime" (onClose)="taskPropertyChanged()">
-      <mat-option [value]="3600">01:00</mat-option>      
-      <mat-option [value]="4500">01:15</mat-option>      
-      <mat-option [value]="5400">01:30</mat-option>      
-      <mat-option [value]="6300">01:45</mat-option>      
-      <mat-option [value]="7200">02:00</mat-option>      
-      <mat-option [value]="8100">02:15</mat-option>      
-      <mat-option [value]="9000">02:30</mat-option>      
-      <mat-option [value]="9900">02:45</mat-option>      
-      <mat-option [value]="10800">03:00</mat-option>      
-      <mat-option [value]="11700">03:15</mat-option>      
-      <mat-option [value]="12600">03:30</mat-option>      
-      <mat-option [value]="13500">03:45</mat-option>      
-      <mat-option [value]="14400">04:00</mat-option>      
-      <mat-option [value]="15300">04:15</mat-option>      
-      <mat-option [value]="16200">04:30</mat-option>      
-      <mat-option [value]="17100">04:45</mat-option>      
-      <mat-option [value]="18000">05:00</mat-option>      
-      <mat-option [value]="18900">05:15</mat-option>      
-      <mat-option [value]="19800">05:30</mat-option>      
-      <mat-option [value]="20700">05:45</mat-option>      
-      <mat-option [value]="21600">06:00</mat-option>      
-      <mat-option [value]="22500">06:15</mat-option>      
-      <mat-option [value]="23400">06:30</mat-option>      
-      <mat-option [value]="24300">06:45</mat-option>      
-    </mat-select>
-  <br>
-  <br>
-  <br>
-</div>
-
-  <task-point *ngFor="let p of task?.TaskPoints" [point]="p"></task-point>
-
-  <div *ngIf="task == null || task.TaskPoints.length == 0">
-    <div *ngIf="userService.currentUser.isAdmin">
-      <br><br>
-      <br> Neue Aufgaben kannst du z.B. mit dem großartigen Tool <a class="link" href="http://prosoar.de/" target="_blank">http://prosoar.de</a> von Tobias Lohner erstellen.
-      <br><br>
+  <div style="display: flex; justify-content: space-between" *ngIf="task?.TaskPoints.length > 0" (click)="collapsed=!collapsed;">
+    <h2>{{title}}</h2>
+    <div class="expand-button">
+      <i *ngIf="collapsed" class="material-icons">expand_more</i>
+      <i *ngIf="!collapsed" class="material-icons">expand_less</i>
     </div>
-    <div *ngIf="!userService.currentUser.isAdmin">Um eine neue Aufgabe zu erstellen, musst du als Administrator angemeldet sein.</div>
   </div>
 
+  <div *ngIf="!collapsed">
 
-  <div class="buttons" style="display: flex;" *ngIf="!isEditorEnabled">
-    
-    <button *ngIf="task != null && task.TaskPoints.length > 0 && userService.currentUser.isAdmin" mat-raised-button   (click)="enableEditMode()" style="margin-right: 5px;"> <i class="material-icons">edit</i> bearbeiten</button>
+    <div *ngIf="isEditorEnabled">
+      <br>
 
-    <div class="upload" *ngIf="userService.currentUser.isAdmin">
-      <form>
-        <input type="file" #file (change) = "uploadTask(file.files)" accept=".tsk">
-          <button *ngIf="task==null || task.TaskPoints.length == 0" mat-raised-button (click)="file.click()">Aufgabe hochladen</button>          
-      </form>
+      <mat-radio-group class="example-radio-group" [(ngModel)]="task.Type" (change)="taskTypeChanged()">
+        <mat-radio-button [value]="'RT'">Racing Task</mat-radio-button>
+        <br>
+        <br>
+        <mat-radio-button [value]="'AAT'">AAT</mat-radio-button>
+      </mat-radio-group>
+      <br>
+
+      <div class="aat-time">
+        <mat-form-field *ngIf="task && task.Type == 'AAT'">
+
+          <mat-select placeholder="Mindestaufgabenzeit" [(ngModel)]="task.AatMinTime" (onClose)="taskPropertyChanged()">
+            <mat-option [value]="3600">01:00</mat-option>
+            <mat-option [value]="4500">01:15</mat-option>
+            <mat-option [value]="5400">01:30</mat-option>
+            <mat-option [value]="6300">01:45</mat-option>
+            <mat-option [value]="7200">02:00</mat-option>
+            <mat-option [value]="8100">02:15</mat-option>
+            <mat-option [value]="9000">02:30</mat-option>
+            <mat-option [value]="9900">02:45</mat-option>
+            <mat-option [value]="10800">03:00</mat-option>
+            <mat-option [value]="11700">03:15</mat-option>
+            <mat-option [value]="12600">03:30</mat-option>
+            <mat-option [value]="13500">03:45</mat-option>
+            <mat-option [value]="14400">04:00</mat-option>
+            <mat-option [value]="15300">04:15</mat-option>
+            <mat-option [value]="16200">04:30</mat-option>
+            <mat-option [value]="17100">04:45</mat-option>
+            <mat-option [value]="18000">05:00</mat-option>
+            <mat-option [value]="18900">05:15</mat-option>
+            <mat-option [value]="19800">05:30</mat-option>
+            <mat-option [value]="20700">05:45</mat-option>
+            <mat-option [value]="21600">06:00</mat-option>
+            <mat-option [value]="22500">06:15</mat-option>
+            <mat-option [value]="23400">06:30</mat-option>
+            <mat-option [value]="24300">06:45</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+      </div>
     </div>
-    <button *ngIf="task==null || task.TaskPoints.length == 0" mat-raised-button color="accent" (click)="createTask()">Aufgabe erstellen</button>          
-  
-    <a *ngIf="task != null && task.TaskPoints.length > 0 && !isEditorEnabled" mat-raised-button  [href]="'Day/DownloadTask?dayId=' + dayId" style="height: 36px">
-    <i class="material-icons">file_download</i>
-      download
-    </a>
-  </div>
 
-  <div class="buttons" style="display: flex;" *ngIf="isEditorEnabled">
-    <button mat-raised-button (click)="cancel()" style="margin-right: 5px">Abbrechen</button>    
-    <button mat-raised-button  color="accent" (click)="save()"><i class="material-icons">save</i> Speichern</button>        
+    <br>
+    <task-point *ngFor="let p of task?.TaskPoints; index as i" [index]="i" [point]="p"></task-point>
+
+    <div *ngIf="task == null || task.TaskPoints.length == 0">
+      <div *ngIf="userService.currentUser.isAdmin">
+        <br>
+        <br>
+        <br> Neue Aufgaben kannst du z.B. mit dem großartigen Tool
+        <a class="link" href="http://prosoar.de/" target="_blank">http://prosoar.de</a> von Tobias Lohner erstellen.
+        <br>
+        <br>
+      </div>
+      <div *ngIf="!userService.currentUser.isAdmin">Um eine neue Aufgabe zu erstellen, musst du als Administrator angemeldet sein.</div>
+    </div>
+
+
+    <div class="buttons" style="display: flex;" *ngIf="!isEditorEnabled">
+
+      <button *ngIf="task != null && task.TaskPoints.length > 0 && userService.currentUser.isLoggedIn && userService.currentUser.isAdmin" mat-raised-button (click)="enableEditMode()"
+        style="margin-right: 5px;">
+        <i class="material-icons">edit</i> bearbeiten</button>
+
+      <div class="upload" *ngIf="userService.currentUser.isAdmin">
+        <form>
+          <input type="file" #file (change)="uploadTask(file.files)" accept=".tsk">
+          <button *ngIf="task==null || task.TaskPoints.length == 0" mat-raised-button (click)="file.click()">Aufgabe hochladen</button>
+        </form>
+      </div>
+      <button *ngIf="task==null || task.TaskPoints.length == 0" mat-raised-button color="accent" (click)="createTask()">Aufgabe erstellen</button>
+
+      <a *ngIf="task != null && task.TaskPoints.length > 0 && !isEditorEnabled" mat-raised-button [href]="'Day/DownloadTask?dayId=' + dayId"
+        style="height: 36px">
+        <i class="material-icons">file_download</i>
+        download
+      </a>
+    </div>
+
+    <div class="buttons" style="display: flex;" *ngIf="isEditorEnabled">
+      <button mat-raised-button (click)="cancel()" style="margin-right: 5px">Abbrechen</button>
+      <button mat-raised-button color="accent" (click)="save()">
+        <i class="material-icons">save</i> Speichern</button>
+    </div>
   </div>
-</div>
 </div>

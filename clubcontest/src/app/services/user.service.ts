@@ -15,8 +15,8 @@ export class UserService {
   }
 
   public isAdmin(competitionId:number):Observable<boolean>{
-    //return this.api.get<boolean>("/User/IsAdmin?competitionId=" + competitionId);
-    return Observable.of(true);;
+    return this.api.get<boolean>("/User/IsAdmin?competitionId=" + competitionId);
+    //return Observable.of(true);;
   }
 
   public saveSettings(userSettings:IUserSettings):Observable<any>{

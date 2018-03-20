@@ -2,11 +2,13 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http.Authentication;
+
 using Microsoft.AspNetCore.Authorization;
 using SampleMvcApp.Database;
 using SampleMvcApp.Extensions;
 using SampleMvcApp.ViewModels;
+using Microsoft.AspNetCore.Authentication;
+using System.Threading.Tasks;
 
 namespace SampleMvcApp.Controllers
 {
@@ -18,10 +20,12 @@ namespace SampleMvcApp.Controllers
 		{
 			_dbContext = dbContext;
 		}
-		public IActionResult Login(string returnUrl = "/")
+
+		public async Task Login(string returnUrl = "/")
 		{
-			return new ChallengeResult("Auth0", new AuthenticationProperties() { RedirectUri = returnUrl });
+			await HttpContext.ChallengeAsync("Auth0", new AuthenticationProperties() { RedirectUri = returnUrl });
 		}
+
 
 #if !DEBUG
 		[Authorize] 

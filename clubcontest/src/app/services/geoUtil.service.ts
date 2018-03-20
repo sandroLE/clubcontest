@@ -3,6 +3,7 @@ import { ITask } from './../models/task';
 import { Http } from '@angular/http';
 import { Injectable } from '@angular/core';
 import * as L from 'leaflet';
+import { Color } from '../Color';
 
 declare var turf;
 
@@ -31,7 +32,7 @@ export class GeoUtilService {
     
     var l = LGeometryUtil.destination(l1,lb, task.TaskPoints[0].ObservationZone.Length/2);
     var r = LGeometryUtil.destination(l1,rb, task.TaskPoints[0].ObservationZone.Length/2);
-    return L.polyline([l, r]);
+    return L.polyline([l, r], {color:Color.Start});
   }
 
 
@@ -57,7 +58,7 @@ export class GeoUtilService {
     
     var l = LGeometryUtil.destination(l1,lb, lastTP.ObservationZone.Length / 2);
     var r = LGeometryUtil.destination(l1,rb, lastTP.ObservationZone.Length / 2);
-    return L.polyline([l, r]);
+    return L.polyline([l, r], {color:Color.Finish});
   }
 
 

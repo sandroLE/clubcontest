@@ -58,11 +58,11 @@ export class CompetitionDayComponent {
 
   }
 
-  onTaskUploaded() {
-    this.loadDay(this.day.Id);
+  onTaskCreated(task) {    
+    this.day.XcSoarTask = task;
   }
 
-
+  
   private deleteDay() {
     var url = this.apiService.apiBaseUrl + "/Day/Delete?id=" + this.day.Id;
     this.http.delete(url).subscribe(() => {
@@ -90,8 +90,7 @@ export class CompetitionDayComponent {
           this.setScores();
           this.mapService.showTask(this.day.XcSoarTask);
         }
-
-      })
+      });
   }
 
 

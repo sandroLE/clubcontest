@@ -32,3 +32,4 @@ ClubContestMvcApp/obj/
 .vs/
 ClubContest.sln.DotSettings.user
 ClubContestMvcApp/Properties/PublishProfiles/tellingme - Web Deploy.pubxml.user
+clubcontest/package-lock.json

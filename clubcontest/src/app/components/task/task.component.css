@@ -6,13 +6,9 @@
     font-family: sans-serif;    
     width: 100%;
     box-sizing: border-box;
-    border: 1px solid white;
+   
 }
 
-.task:hover{
-    
-    border: 1px solid whitesmoke;
-}
 
 .taskpoint{
    
@@ -52,4 +48,12 @@ input[type=file]{
     display: flex;
     align-items: baseline;
     justify-content:  flex-start;
+}
+
+.aat-time{
+    padding-left: 30px;
+    padding-top: 10px;
+}
+.aat-time mat-form-field{
+    width: 100px;
 }

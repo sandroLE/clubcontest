@@ -81,7 +81,13 @@ namespace SampleMvcApp.Controllers
 			if (task != null)
 			{
 				_dbContext.SaveChanges();
-				return Ok(day);
+
+				var serializerSettings = new JsonSerializerSettings
+				{
+					ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver(),
+					ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+				};
+				return new JsonResult(task, serializerSettings);								
 			}
 			else
 			{
@@ -194,7 +200,14 @@ namespace SampleMvcApp.Controllers
 			if (task != null)
 			{
 				_dbContext.SaveChanges();
-				return Ok(task);
+
+				var serializerSettings = new JsonSerializerSettings
+				{
+					ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver(),
+					ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+				};
+
+				return new JsonResult(task, serializerSettings);				
 			}
 			
 

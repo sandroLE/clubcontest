@@ -27,10 +27,19 @@
 
 }
 
+
+button.hide-sidebar{
+    display: none;
+}
+
 @media(max-width:420px){
   .sidebar {
-        width:419px;
+       /* width:419px;*/
   }
+
+  button.hide-sidebar{
+    display: block;
+}
 }
 
 .sidebar.hidden{
@@ -72,6 +81,7 @@ input[type=file]{
     display: flex;    
     justify-content: flex-end;
     color:#cccccc;
+    background-color: #f1f1f1; 
 }
 
 

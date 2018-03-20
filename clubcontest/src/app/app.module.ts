@@ -1,4 +1,4 @@
-import {MatIconModule, MatProgressSpinnerModule, MatButtonModule, MatMenuModule, MatSelectModule, MatProgressBarModule, MatInputModule, MatAutocompleteModule, MatCheckboxModule} from '@angular/material';
+import {MatIconModule, MatProgressSpinnerModule, MatButtonModule, MatMenuModule, MatSelectModule, MatProgressBarModule, MatInputModule, MatAutocompleteModule, MatCheckboxModule, MatRadioModule} from '@angular/material';
 import { UserProfileComponent } from './components/user-profile/userProfile.component';
 import { CoordinatePipe } from './pipes/coordinate.pipe';
 import { CompetitionSettingsComponent } from './components/competition-settings/competition-settings.component';
@@ -58,7 +58,7 @@ const appRoutes: Routes = [
     FormsModule,ReactiveFormsModule,
     HttpModule,  
     BrowserAnimationsModule,
-    MatMenuModule,MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatSelectModule, MatProgressBarModule, MatInputModule, MatAutocompleteModule, MatCheckboxModule
+    MatMenuModule,MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatSelectModule, MatProgressBarModule, MatInputModule, MatAutocompleteModule, MatCheckboxModule, MatRadioModule
   ],
   exports:[],
   providers: [MapService, GeoUtilService, TaskScoringService, FlightService, ApiService, UserService],

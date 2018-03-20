@@ -4,17 +4,23 @@
 <div class="sidebar"  [class.hidden]="isSideBarHidden" *ngIf="!hasError">
 	
 
-	<div class="menu" *ngIf="userService.currentUser.isAdmin">
-		<button mat-icon-button [matMenuTriggerFor]="menu">
+	<div class="menu" >
+		<ng-container *ngIf="userService.currentUser.isAdmin">
+		<button mat-icon-button [matMenuTriggerFor]="menu" >
 			<mat-icon>more_vert</mat-icon>
 		</button>
 		<mat-menu #menu="matMenu">
 			<button mat-menu-item (click)="deleteDay()">Wertungstag löschen</button>
 			<!--<button md-menu-item (click)="changeDate()">Datum ändern</button>-->
 		</mat-menu>
+		</ng-container>
+		<button class="hide-sidebar" mat-icon-button (click)="hideSidebar()">
+				<mat-icon>close</mat-icon>
+		</button>
 	</div>
 	<div>		
-		<app-task [task]="day?.XcSoarTask" (taskUploaded)="onTaskUploaded()" [dayId]="day?.Id" [collapsed]="day?.Flights.length > 0"></app-task>
+		<app-task [task]="day?.XcSoarTask" (taskCreated)="onTaskCreated($event)" [dayId]="day?.Id" [collapsed]="day?.Flights.length > 0"></app-task>
+
 		<div class="flight-list" *ngIf="day?.XcSoarTask">
 
 			<div *ngIf="day?.Flights.length > 0" class="flight-list-header">

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.Kestrel.Internal.Networking;
 using Newtonsoft.Json;
 using SampleMvcApp.Database;
 using SampleMvcApp.DataModels;
@@ -23,6 +22,7 @@ namespace SampleMvcApp.Controllers
 			_dbContext = dbContext;
 		}
 
+	
 		public IActionResult New()
 		{
 			var currentUser = _dbContext.User.FirstOrDefault(x => x.Auth0Id == User.GetId());

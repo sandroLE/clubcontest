@@ -50,8 +50,9 @@ export class CompetitionComponent implements OnInit {
           this.mapService.parsedWayPoints = this.parseWaypoints(this.competition.Waypoints);
 
           this.userService.isAdmin(this.competition.Id).subscribe(isAdmin => {
+            console.log("isadmin", isAdmin);
             this.userService.currentUser.isAdmin = isAdmin;
-          }, (error) => { });
+          }, (error) => { console.log("isadmin - error", error); });
 
           if (params['dayId'] == "total" || this.competition.Days.length == 0) {
             this.showTotals = true;

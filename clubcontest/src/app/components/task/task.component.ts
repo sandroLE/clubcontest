@@ -28,14 +28,17 @@ export class TaskComponent {
   @Input()
   public get task() { return this._task; }
   public set task(value: ITask) {
-    this._task = value;
-    this.isEditorEnabled = false;
-    this.taskBackup = null;
-    this.title = this.getTaskTitle(this._task);
+    if (value != this._task)
+    {
+      this._task = value;
+      this.isEditorEnabled = false;
+      this.taskBackup = null;
+      this.title = this.getTaskTitle(this._task);
+    }
   };
 
   @Input() dayId: number;
-  @Output() taskUploaded = new EventEmitter<any>()
+  @Output() taskCreated = new EventEmitter<ITask>()
   @Input() collapsed = false;
 
   ngOnInit() {
@@ -65,15 +68,17 @@ export class TaskComponent {
   private enableEditMode() {
     this.isEditorEnabled = true;
     this.taskBackup = this.createTaskBackup(this.task);
-    this.mapService.clearMap();
-    this.mapService.showTask(this.task, true);
+    this.mapService.showTask(this.task, true);    
   }
 
   private uploadTask(files: FileList) {
     var url = this.apiService.apiBaseUrl + "/Day/UploadTask?dayId=" + this.dayId
-    this.apiService.uploadFile(files, url).subscribe(x => {
-      this.taskUploaded.emit();
-    }, (error) => {
+    this.apiService.uploadFile(files, url).subscribe((response) => {
+      var task = response.json();
+      this._task = task;
+      this.taskCreated.next(task);
+      this.mapService.showTask(task);
+    }, (error) => { 
       if (error.status == 401) {
         window.location.href = "./Account/Login"
       }
@@ -82,6 +87,16 @@ export class TaskComponent {
       }
     })
   }
+
+  createTask(){
+    let center = this.mapService.getCenter();
+    this.apiService.createNewTask(this.dayId, center.lat, center.lng).subscribe((task) => { 
+      this.task = task;
+      this.taskCreated.next(task);
+      this.enableEditMode();
+    });
+  }
+
 
   private taskTypeChanged() {
     var lastIndex = this.task.TaskPoints.length - 1;
@@ -141,14 +156,6 @@ export class TaskComponent {
     return backup;
   }
 
-  createTask(){
 
-    let center = this.mapService.getCenter();
-    this.apiService.createNewTask(this.dayId, center.lat, center.lng).subscribe((task) => {
-      console.log("created task");
-      this._task = task;
-      this.enableEditMode();
-    });
-  }
 
 }
