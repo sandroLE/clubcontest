@@ -286,7 +286,6 @@ export class MapService {
     }
       , (err) => alert(err)
       , () => {
-        console.log("MapService::almostOverMove::completed");
         m.almostOver.removeLayer(flightLayer)
       });
     return obs;
@@ -326,14 +325,12 @@ export class MapService {
     //TODO: unsubscribe to avoid memory leaks
     let subscription = Observable.fromEvent(m, "almost:over").subscribe((e: any) => {
       this.nearTurnPointSnap = { latlng: e.latlng, name: e.layer.getTooltip().getContent() };
-      console.log("almost over start", this.nearTurnPointSnap);
     });
 
     this.disposableSubscriptions.push(subscription);
 
     subscription = Observable.fromEvent(m, "almost:out").subscribe((e: any) => {
       this.nearTurnPointSnap = null;
-      console.log("almost over out", this.nearTurnPointSnap);
     });
 
     this.disposableSubscriptions.push(subscription);
@@ -347,7 +344,6 @@ export class MapService {
       return;
     }
     var index = this.getTaskPointIndex(e.vertex.getLatLng(), task);
-    console.log("editable:vertex:click", index);
     if (index < 1 || index >= task.TaskPoints.length - 1) {
       e.cancel();
     }
@@ -362,7 +358,7 @@ export class MapService {
       Name: "WP",
       ObservationZone: {
         Length: 0,
-        Radius: 1000,
+        Radius: 5000,
         Type: task.Type == "AAT" ? "Cylinder" : "Keyhole"
       },
       Type: task.Type == "AAT" ? "Area" : "Turn"
@@ -371,8 +367,6 @@ export class MapService {
 
   private onVertexDrag(e, task: ITask) {
     if (e.layer instanceof (<any>L).Circle) {
-      console.log("vertex drag", e);
-
       var latLng = e.layer.getLatLng(); //the center of the circle
       var index = this.getTaskPointIndex(latLng, task);
       if (index >= 0) {

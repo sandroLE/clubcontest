@@ -73,7 +73,6 @@ export class CompetitionDayComponent {
 
 
   private loadDay(dayId: number) {
-    console.log("load day", dayId);
     this.isMapVisible = false;
     this.hasError = false;
     var url = this.apiService.apiBaseUrl + "/Day/Get?id=" + dayId
@@ -99,7 +98,6 @@ export class CompetitionDayComponent {
 
   private setScores() {
     this.scoring.setFlightScrores(this.day.Flights)
-    console.log("dayComponent::setScores");
   }
 
   private uploadFlight(files: FileList) {
@@ -196,8 +194,6 @@ export class CompetitionDayComponent {
   }
 
   private expandFlight(flight: IFlight) {
-    console.log("DayComponent::flightExpanded");
-
     this.selectFlight(flight, true).subscribe((f) => {
       f.isExpanded = true;
     });
@@ -230,7 +226,6 @@ export class CompetitionDayComponent {
   private removeFromArray(array: number[], value: number) {
     if (array.indexOf(value) >= 0) {
       array = array.filter(x => x != value);
-      console.log("CompetitionDayComponent::removeFromArray:", array);
       return [...array];
     }
     return array;

@@ -56,7 +56,7 @@
     </div>
 
     <br>
-    <task-point *ngFor="let p of task?.TaskPoints; index as i" [index]="i" [point]="p"></task-point>
+    <task-point *ngFor="let p of task?.TaskPoints; index as i" [index]="i" [point]="p" [disabled]="!isEditorEnabled" (change)="onTaskPointChanged($event)"></task-point>
 
     <div *ngIf="task == null || task.TaskPoints.length == 0">
       <div *ngIf="userService.currentUser.isAdmin">

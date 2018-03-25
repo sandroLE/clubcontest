@@ -8,47 +8,59 @@ import * as L from 'leaflet';
 
 declare var turf;
 
-export class AatCalculator  extends TaskCalculator {
+export class AatCalculator extends TaskCalculator {
 
     constructor(mapService: MapService, geoUtil: GeoUtilService) {
         super(mapService, geoUtil);
     }
 
+
+
+    
     public getFlightScoring(flight: IFlight, task: ITask): IFlightScoring {
         var starts = this.getStart(flight.Points, task);
         var finishs = this.getFinish(flight.Points, task)
         var turnpoints = [...task.TaskPoints];
         let scorings: IFlightScoring[] = [];
-        starts.forEach(start => {
-            finishs.forEach(finish => {
+        
+        for (let start of starts)
+        {           
+            var validFinishs = finishs
+                .filter(x => start.Time.getTime() < x.Time.getTime())
+                .sort((a,b) => a.Time.getTime() - b.Time.getTime());
+            
+            for(let finish of validFinishs)            
+            {                   
+                if (scorings.length > 0){
+                    break;
+                }
                 var bestTurnPoints: ILoggerPoint[] = [];
-                task.TaskPoints.forEach((taskPoint, i) => {
-                    if (i == 0) return true; //skip start;
-                    if (i >= task.TaskPoints.length - 1) return true//skip finish
-
-                    let tp = this.findBestTurnPoint(flight.Points, task, start, finish, i);
-                    
+                
+                for (let i=1; i< task.TaskPoints.length-1 ; i++) {                    
+                    let tp = this.findBestTurnPoint(flight.Points, task, start, finish, i);                    
                     if (tp == null || tp.Time > finish.Time || tp.Time < start.Time) {
                         tp = null;
                     }
                     bestTurnPoints.push(tp);                    
-                });
+                }
 
-                let points = [start, ...bestTurnPoints, finish];
-                
-                
-                var result = this.calculateFlight(task, points);
-                scorings.push(result);
-            });
-        });
+                if (bestTurnPoints.every(x => x != null))
+                {
+                    let points = [start, ...bestTurnPoints, finish];                                
+                    var result = this.calculateFlight(task, points);
+                    scorings.push(result);
+                }
+            }
+        }
 
+        
         return scorings.sort((a, b) => { return a.speed - b.speed }).pop();
     }
 
 
 
 
-    private findBestTurnPoint(points: ILoggerPoint[], task: ITask, start: ILoggerPoint, finish: ILoggerPoint, index: number): ILoggerPoint {
+private findBestTurnPoint(points: ILoggerPoint[], task: ITask, start: ILoggerPoint, finish: ILoggerPoint, index: number): ILoggerPoint {
 
         var prev: ILoggerPoint
             = index == 1
@@ -105,16 +117,16 @@ export class AatCalculator  extends TaskCalculator {
     }
 
 
-    public calculateFlight(task:ITask, turnPoints: ILoggerPoint[]): IFlightScoring {
+    public calculateFlight(task: ITask, turnPoints: ILoggerPoint[]): IFlightScoring {
 
-        if (turnPoints.some(x => x == null)){
-            return { points: turnPoints, totalDistance:0, time:0, speed:0, finished:false };
+        if (turnPoints.some(x => x == null)) {
+            return { points: turnPoints, totalDistance: 0, time: 0, speed: 0, finished: false };
         }
         var start = turnPoints[0];
         var finish = turnPoints[turnPoints.length - 1];
         let totalDistance = TaskCalculator.getTotalDistance(turnPoints)/*m*/ / 1000/*km*/;
         let time = Math.max(
-             (finish.Time.getTime() - start.Time.getTime())/*msec*/ / 1000/*sec*/ / 60/*min*/ / 60/*h*/
+            (finish.Time.getTime() - start.Time.getTime())/*msec*/ / 1000/*sec*/ / 60/*min*/ / 60/*h*/
             , task.AatMinTime / 60 / 60
         );
         let speed = totalDistance / time;
@@ -122,6 +134,6 @@ export class AatCalculator  extends TaskCalculator {
         return { points: turnPoints, totalDistance, time, speed, finished };
     }
 
- 
+
 
 }

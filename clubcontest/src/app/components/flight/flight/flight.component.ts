@@ -59,14 +59,11 @@ export class FlightComponent {
   }
 
   ngOnInit() {
-    
     this.gliderTypes = this.gliderTypes.sort((a, b) => { return a.name == b.name ? 0 : a.name < b.name ? -1 : 1; });
-
     this.form.valueChanges.subscribe((value) => {
       this.flight.GliderType = value.selectedGlider;
       this.flight.Handicap = this.getHandicap(this.flight.GliderType);
       this.flight.PilotName = value.PilotName;
-      console.log(this.flight);
     })
   }
 
@@ -91,7 +88,6 @@ export class FlightComponent {
 
 
   toggleExpand($event: MouseEvent) {
-    console.log("FlightComponent::expand clicked")
     $event.stopPropagation();
     $event.preventDefault();
 
@@ -133,7 +129,6 @@ export class FlightComponent {
 
   private recalculate() {
     var scoring = this.scoring.getFlightScoring(this.flight, this.task);
-    console.log(scoring);
     if (scoring && scoring.points.every(x => x != null)) {
       this.flight.Speed = scoring.speed;
       this.flight.Distance = scoring.totalDistance;
@@ -198,7 +193,6 @@ export class FlightComponent {
       }
       , () => alert("error")
       , () => {
-        console.log("FlightComponent::almostOverMove::completed")
         this.turnpointsChanged.emit(this.flight);
       });
   }

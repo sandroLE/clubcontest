@@ -1,12 +1,52 @@
-<div class="task-point" [class]="point.Type" [style.color]="color">
-  <span *ngIf="point.Type == 'Start'" >Start: {{point.Name}}</span>
-  <span *ngIf="point.Type != 'Start' && point.Type != 'Finish'">WP{{index}}: {{point.Name}}</span>
-  <span *ngIf="point.Type == 'Finish'">Ziel: {{point.Name}}</span>
+<div class="task-point" [style.color]="color">
 
-  <div class="coordinates">
-    {{point.Latitude|coord:'N'}} - {{point.Longitude|coord:'E'}}
-    <span *ngIf="point.ObservationZone">({{point.ObservationZone.Type}} {{(point.ObservationZone.Length || point.ObservationZone.Radius) / 1000}}km)</span>
-    <br>
-    <br>
+
+  <ng-container *ngIf="point.Type != 'Finish'">
+    <span *ngIf="point.Type == 'Start'">Start: {{point.Name}}</span>
+    <span *ngIf="point.Type != 'Start' && point.Type != 'Finish'">WP{{index}}: {{point.Name}}</span>
+
+
+    <div class="coordinates">
+      {{point.Latitude|coord:'N'}} - {{point.Longitude|coord:'E'}}
+      <span *ngIf="point.ObservationZone">({{point.ObservationZone.Type}} {{(point.ObservationZone.Length || point.ObservationZone.Radius) / 1000}}km)</span>
+    </div>
+  </ng-container>
+
+
+  <div *ngIf="point.Type == 'Finish'">
+
+    <span>Ziel: {{point.Name}}</span>
+
+    <div class="coordinates">
+      {{point.Latitude|coord:'N'}} - {{point.Longitude|coord:'E'}} &nbsp;
+      <span *ngIf="point.ObservationZone && point.ObservationZone.Type == 'Cylinder'"> (Tonne {{(point.ObservationZone.Radius) / 1000}}km)</span>
+      <span *ngIf="point.ObservationZone && point.ObservationZone.Type == 'Line'"> (Linie {{(point.ObservationZone.Length) / 1000}}km)</span>
+    </div>
+
+    <div class="finish-type" *ngIf="!disabled">
+      <mat-radio-group [(ngModel)]="point.ObservationZone.Type" (change)="somethingHasChanged()">
+        <mat-radio-button color="accent" [value]="'Line'">Linie</mat-radio-button>&nbsp;&nbsp;&nbsp;&nbsp;
+        <mat-radio-button color="accent" [value]="'Cylinder'">Tonne</mat-radio-button>
+      </mat-radio-group>
+
+      <br>
+      <br>
+      <mat-form-field *ngIf="point.ObservationZone.Type == 'Cylinder'">
+        <input matInput type="number" placeholder="Radius (m)" step="500" [(ngModel)]="radius">
+        <mat-hint align="end">z.B. 500m</mat-hint>
+        <mat-error>Bitte Radius angeben</mat-error>
+      </mat-form-field>
+
+      <mat-form-field *ngIf="point.ObservationZone.Type == 'Line'">
+        <input matInput type="number" placeholder="Breite (m)" step="500" [(ngModel)]="length"  >
+        <mat-hint align="end">z.B. 10000m</mat-hint>
+        <mat-error *ngIf="point.ObservationZone.Length">Bitte Breite angeben</mat-error>
+      </mat-form-field>
+
+
+
+    </div>
   </div>
+
+
 </div>

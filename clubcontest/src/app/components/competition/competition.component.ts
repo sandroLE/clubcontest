@@ -50,7 +50,6 @@ export class CompetitionComponent implements OnInit {
           this.mapService.parsedWayPoints = this.parseWaypoints(this.competition.Waypoints);
 
           this.userService.isAdmin(this.competition.Id).subscribe(isAdmin => {
-            console.log("isadmin", isAdmin);
             this.userService.currentUser.isAdmin = isAdmin;
           }, (error) => { console.log("isadmin - error", error); });
 
@@ -130,7 +129,6 @@ export class CompetitionComponent implements OnInit {
           result.push(wp);
         }
       })
-      console.log(result);
       return result;
     }
     catch (exception) {

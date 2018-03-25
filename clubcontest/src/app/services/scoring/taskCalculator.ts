@@ -1,6 +1,6 @@
 import { GeoUtilService } from './../geoUtil.service';
 import { MapService } from './../map.service';
-import { ITask } from './../../models/task';
+import { ITask, ITaskPoint } from './../../models/task';
 import { ILoggerPoint, IFlight, IFlightScoring } from './../../models/flight';
 import * as L from 'leaflet';
 
@@ -65,14 +65,30 @@ export abstract class TaskCalculator {
 
 
     protected getFinish(points: ILoggerPoint[], task: ITask): ILoggerPoint[] {
-        var finishTP = task.TaskPoints[task.TaskPoints.length - 1];
+        let finishPoint = task.TaskPoints.find(x => x.Type == "Finish");
+        return finishPoint.ObservationZone.Type == "Line" 
+            ? this.getFinishOverLine(points, task, finishPoint) 
+            : this.getFinishOverCylinder(points,finishPoint);
+    }
+
+
+    private getFinishOverCylinder(points: ILoggerPoint[], finishPoint:ITaskPoint): ILoggerPoint[] {               
+        let finish = L.latLng(finishPoint.Latitude, finishPoint.Longitude);
+        let finishSections = points.filter(x => finish.distanceTo(L.latLng(x.Latitude, x.Longitude)) <= finishPoint.ObservationZone.Radius);
+        
+        return finishSections;
+    }
+
+
+    private getFinishOverLine(points: ILoggerPoint[], task:ITask, finishPoint:ITaskPoint): ILoggerPoint[] {
+        
         var leafLetFinishLine = this.geoUtil.createFinishLine(task, this.mapService.map);
         var turfFinishLine = turf.lineString([
             [leafLetFinishLine.getLatLngs()[0].lat, leafLetFinishLine.getLatLngs()[0].lng],
             [leafLetFinishLine.getLatLngs()[1].lat, leafLetFinishLine.getLatLngs()[1].lng],
         ]);
 
-        var startSections: ILoggerPoint[] = [];
+        var finishSections: ILoggerPoint[] = [];
         for (var i = 0; i < points.length - 2; i++) {
             var loggerPoint = points[i];
             var loggerPointNext = points[i + 1];
@@ -87,12 +103,14 @@ export abstract class TaskCalculator {
                         Longitude: intersection.geometry.coordinates[1],
                         Time: loggerPoint.Time
                     }
-                    startSections.push(finish);
+                    finishSections.push(finish);
                 }
             }
         }
-        return startSections;
+        return finishSections;
     }
+
+
 
 
     private isCorrectStartlineCrossingDirection(flight: number[][], task: ITask): boolean {

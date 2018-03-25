@@ -1,20 +1,25 @@
 import { ITaskPoint } from './../../models/task';
-import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy, EventEmitter, Output } from '@angular/core';
 import { Color } from '../../Color';
 
 @Component({
   selector: 'task-point',
   templateUrl: './task-point.component.html',
-  styleUrls: ['./task-point.component.css'],
+  styleUrls: ['./task-point.component.scss'],
  // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TaskPointComponent implements OnInit {
+
+  @Input()
+  public disabled = true;
 
   @Input() 
   public point: ITaskPoint = null;
 
   @Input()
   public index:number;
+
+  @Output() change = new EventEmitter<ITaskPoint>();
 
   constructor() { }
 
@@ -23,8 +28,7 @@ export class TaskPointComponent implements OnInit {
   ngOnInit() {
   }
 
-  ngOnChanges(){
-    
+  ngOnChanges(){    
     this.color = Color.get(this.index);
 
     if (this.point.Type == "Start"){
@@ -34,7 +38,28 @@ export class TaskPointComponent implements OnInit {
     if (this.point.Type == "Finish"){
       this.color = Color.Finish;
     }
-
   }
 
+
+  somethingHasChanged(){
+    console.log("something has changed");
+    this.change.next(this.point);
+  }
+
+
+  set length(value:number){
+    this.point.ObservationZone.Length = value;
+    this.somethingHasChanged();
+  }
+  get length(){
+    return this.point.ObservationZone.Length;
+  }
+
+  set radius(value:number){
+    this.point.ObservationZone.Radius = value;
+    this.somethingHasChanged();
+  }
+  get radius(){
+    return this.point.ObservationZone.Radius;
+  }
 }

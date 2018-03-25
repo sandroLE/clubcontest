@@ -15,7 +15,6 @@ export class UserProfileComponent  {
   public userDisplayName = "max mustermann";
 
   saveSettings(){
-    console.log("userProfile.component:saveSettings")
     this.userService.saveSettings({
       DisplayName: this.userDisplayName
     }).subscribe(() => {

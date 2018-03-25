@@ -157,5 +157,8 @@ export class TaskComponent {
   }
 
 
-
+  onTaskPointChanged(){
+    //this.mapService.clearTask();
+    this.mapService.showTask(this.task, true);
+  }
 }
