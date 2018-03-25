@@ -5,6 +5,7 @@ import 'rxjs/Rx'
 import { Http, Response, Headers, RequestOptions } from '@angular/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
+import { IDay } from '../models/day';
 
 @Injectable()
 export class ApiService {
@@ -55,6 +56,10 @@ export class ApiService {
   public Delete(url: string): Observable<Response> {
     var url = this.apiBaseUrl + url
     return this.http.delete(url);
+  }
+
+  public updateDay(day: IDay){
+    return this.post("/Day/UpdateDay?id=" + day.Id, {Date:day.Date});
   }
 
   public apiBaseUrl = ".";

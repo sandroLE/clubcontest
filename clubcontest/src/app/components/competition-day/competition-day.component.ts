@@ -9,9 +9,11 @@ import { IFlight, ILoggerPoint, IFlightScoring } from './../../models/flight';
 import { IDay } from './../../models/day';
 import { Http, Headers, RequestOptions, Response } from '@angular/http';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Component, OnInit, Input, EventEmitter, Output, HostListener } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, HostListener, Inject } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import 'leaflet-geometryutil';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { ChangeDateDialog } from '../changeDateDialog/changeDate.component';
 
 @Component({
   selector: 'app-competition-day',
@@ -44,7 +46,8 @@ export class CompetitionDayComponent {
     , private flightService: FlightService
     , private apiService: ApiService
     , private router: Router
-    , public userService: UserService) { }
+    , public userService: UserService
+    , public dialog: MatDialog) { }
 
   ngOnChanges() {
     this.mapService.clearMap();
@@ -59,11 +62,11 @@ export class CompetitionDayComponent {
 
   }
 
-  onTaskCreated(task) {    
+  onTaskCreated(task) {
     this.day.XcSoarTask = task;
   }
 
-  
+
   private deleteDay() {
     var url = this.apiService.apiBaseUrl + "/Day/Delete?id=" + this.day.Id;
     this.http.delete(url).subscribe(() => {
@@ -120,7 +123,7 @@ export class CompetitionDayComponent {
     this.mapService.clearFlights();
     this.day.Flights
       .filter(x => x.isSelected)
-      .forEach((f, i) => this.mapService.addFlight(f, {color: f.color }));
+      .forEach((f, i) => this.mapService.addFlight(f, { color: f.color }));
     this.initializeSliderValues();
   }
 
@@ -143,7 +146,7 @@ export class CompetitionDayComponent {
       loadedFlight.color = flight.color || "red";
       this.replace(loadedFlight);
       this.mapService.clearFlights();
-      this.day.Flights.filter(x => x.isSelected).forEach((f, i) => this.mapService.addFlight(f, {color: f.color }));
+      this.day.Flights.filter(x => x.isSelected).forEach((f, i) => this.mapService.addFlight(f, { color: f.color }));
       this.initializeSliderValues();
     });
     return obs;
@@ -201,7 +204,7 @@ export class CompetitionDayComponent {
 
   private onTurnpointsChanged(flight: IFlight): void {
     this.mapService.clearFlights();
-    this.mapService.addFlight(flight, { color: this.getColor(this.day.Flights.indexOf(flight)), showMarker:true });
+    this.mapService.addFlight(flight, { color: this.getColor(this.day.Flights.indexOf(flight)), showMarker: true });
   }
 
   private applyFlightUpdates(flight: IFlight): void {
@@ -252,11 +255,11 @@ export class CompetitionDayComponent {
   public sliderChanged() {
     this.mapService.clearFlights();
     let selectedFlights = this.day.Flights.filter(x => x.isSelected);
-    
+
     let showMarker = this.sliderMaxTime == this.sliderTime && selectedFlights.length == 1;
     let traceTime = this.sliderMaxTime == this.sliderTime ? null : this.sliderTime;
     let trackLength = selectedFlights.length > 1 ? 1000000 : null;
-    selectedFlights.forEach((f, i) => this.mapService.addFlight(f, { color: f.color, trackEnd: traceTime, trackLength:trackLength, showMarker: showMarker}));
+    selectedFlights.forEach((f, i) => this.mapService.addFlight(f, { color: f.color, trackEnd: traceTime, trackLength: trackLength, showMarker: showMarker }));
     this.sliderDisplayTime = this.getFormatedTime(new Date(this.sliderTime));
   }
 
@@ -265,17 +268,35 @@ export class CompetitionDayComponent {
     return new Intl.DateTimeFormat('de-DE', options).format(time);
   }
 
-  
-  private resizeTimeOut:any = null;
+
+  changeDate(): void {
+    let dialogRef = this.dialog.open(ChangeDateDialog, {
+      width: '250px',
+      data: { date: this.day.Date }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log("dlg closed", result);
+      if (result != null) {
+        this.day.Date = result;
+        this.apiService.updateDay(this.day).subscribe(() => {
+          this.router.navigate(['../'], { relativeTo: this.route });
+        })
+      }
+    });
+  }
+
+  private resizeTimeOut: any = null;
   @HostListener('window:resize')
-  onResize() {    
-    if (this.resizeTimeOut){
+  onResize() {
+    if (this.resizeTimeOut) {
       clearTimeout(this.resizeTimeOut);
     }
     this.resizeTimeOut = setTimeout(() => {
       this.mapService.invalidateSize();
-    }, 200);    
+    }, 200);
   }
 }
 
 declare var moment;
+

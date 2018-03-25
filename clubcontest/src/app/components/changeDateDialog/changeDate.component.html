@@ -1,0 +1,17 @@
+
+
+  <h2 mat-dialog-title>Datum ändern</h2>
+<mat-dialog-content>
+    <div>
+    <mat-form-field>
+        <input matInput [matDatepicker]="picker" placeholder="Neues Datum" [(ngModel)]="date">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Abbrechen</button>
+  <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
+  <button mat-button [mat-dialog-close]="date">OK</button>
+</mat-dialog-actions>

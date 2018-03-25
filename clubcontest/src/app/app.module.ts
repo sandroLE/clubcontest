@@ -1,4 +1,4 @@
-import {MatIconModule, MatProgressSpinnerModule, MatButtonModule, MatMenuModule, MatSelectModule, MatProgressBarModule, MatInputModule, MatAutocompleteModule, MatCheckboxModule, MatRadioModule, MatSidenavModule, MatSliderModule} from '@angular/material';
+import { MatIconModule, MatProgressSpinnerModule, MatButtonModule, MatMenuModule, MatSelectModule, MatProgressBarModule, MatInputModule, MatAutocompleteModule, MatCheckboxModule, MatRadioModule, MatSidenavModule, MatSliderModule, MatDialogModule, MatDatepickerModule, MatNativeDateModule } from '@angular/material';
 import { UserProfileComponent } from './components/user-profile/userProfile.component';
 import { CoordinatePipe } from './pipes/coordinate.pipe';
 import { CompetitionSettingsComponent } from './components/competition-settings/competition-settings.component';
@@ -28,41 +28,46 @@ import { FlightComponent } from './components/flight/flight/flight.component';
 import { TaskComponent } from './components/task/task.component';
 import { TotalResultComponent } from './components/total-result/total-result/total-result.component';
 import { TaskPointComponent } from './components/task-point/task-point.component';
+import { ChangeDateDialog } from './components/changeDateDialog/changeDate.component';
 
 const appRoutes: Routes = [
-  { path: '', component: CreateCompetitionComponent },    
-  { path: 'Competition/New', component: CreateCompetitionComponent },  
+  { path: '', component: CreateCompetitionComponent },
+  { path: 'Competition/New', component: CreateCompetitionComponent },
   { path: 'Competition/:name', component: CompetitionComponent },
   { path: 'Competition/:name/:dayId', component: CompetitionComponent },
-  { path: 'Account/Settings', component: UserProfileComponent }  
+  { path: 'Account/Settings', component: UserProfileComponent }
 ]
 
 @NgModule({
   declarations: [
-    AppComponent,
-    CreateCompetitionComponent,
-    CompetitionComponent,
-    CompetitionDayComponent,
-    FlightComponent,
-    TaskComponent,
-    OrderByPipe, RoundPipe, TimespanStringPipe,CoordinatePipe
-    , TotalResultComponent,
-    CompetitionSettingsComponent,
-    TaskPointComponent, UserProfileComponent
-    
-    
+    AppComponent
+    , CreateCompetitionComponent
+    , CompetitionComponent
+    , CompetitionDayComponent
+    , FlightComponent
+    , TaskComponent
+    , OrderByPipe
+    , RoundPipe
+    , TimespanStringPipe
+    , CoordinatePipe
+    , TotalResultComponent
+    , CompetitionSettingsComponent
+    , TaskPointComponent
+    , UserProfileComponent
+    , ChangeDateDialog
   ],
-  imports: [   
+  imports: [
     RouterModule.forRoot(appRoutes),
     BrowserModule,
-    FormsModule,ReactiveFormsModule,
-    HttpModule,  
+    FormsModule, ReactiveFormsModule,
+    HttpModule,
     BrowserAnimationsModule,
-    MatMenuModule,MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatSelectModule, MatProgressBarModule, MatInputModule, MatAutocompleteModule, MatCheckboxModule, MatRadioModule
-    ,MatSidenavModule, MatSliderModule
+    MatMenuModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatSelectModule, MatProgressBarModule, MatInputModule, MatAutocompleteModule, MatCheckboxModule, MatRadioModule
+    , MatSidenavModule, MatSliderModule, MatDialogModule, MatDatepickerModule, MatNativeDateModule
   ],
-  exports:[],
+  exports: [],
   providers: [MapService, GeoUtilService, TaskScoringService, FlightService, ApiService, UserService],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [ChangeDateDialog]
 })
 export class AppModule { }

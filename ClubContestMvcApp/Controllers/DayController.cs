@@ -134,6 +134,32 @@ namespace SampleMvcApp.Controllers
 
 		}
 
+#if !DEBUG
+		[Authorize] 
+#endif
+		[HttpPost]
+		public IActionResult UpdateDay(int id, [FromBody] UpdateDayModel model)
+		{
+			var day = _dbContext.Days.Include(x => x.Competition).FirstOrDefault(x => x.Id == id);
+			if (day == null)
+			{
+				return BadRequest();
+			}
+
+			if (!User.IsAdminUser(day.Competition, _dbContext))
+			{
+				return BadRequest();
+			}
+
+			day.Date = model.Date.ToLocalTime();
+
+			_dbContext.SaveChanges();
+
+			return Ok();
+
+		}
+
+
 		[HttpPost]
 		public IActionResult UpdateTask([FromBody] TaskUpdateModel data)
 		{
@@ -224,5 +250,8 @@ namespace SampleMvcApp.Controllers
 
 	}
 
-
+	public class UpdateDayModel
+	{
+		public DateTime Date { get; set; }
+	}
 }
