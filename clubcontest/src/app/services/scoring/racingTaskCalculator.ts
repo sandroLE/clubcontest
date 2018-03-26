@@ -19,34 +19,34 @@ export class RacingTaskCalculator extends TaskCalculator {
         var starts = this.getStart(flight.Points, task);
         var finishs = this.getFinish(flight.Points, task)        
         let scorings: IFlightScoring[] = [];
-        starts.forEach(start => {
-            finishs.forEach(finish => {
 
+        for (let start of starts)
+        {
+            var validFinishs = finishs
+                .filter(x => start.Time.getTime() < x.Time.getTime())
+                .sort((a, b) => a.Time.getTime() - b.Time.getTime());
+
+            let counter = 0;
+            for(let finish of validFinishs)
+            {
                 var turnPoints: ILoggerPoint[] = [];
-                task.TaskPoints.forEach((taskPoint, i) => {
-                    if (i == 0) return; //skip start;
-                    if (i >= task.TaskPoints.length - 1) return //skip finish
-
+                
+                for (let i = 1; i < task.TaskPoints.length - 1; i++) {
                     let tp = this.findAnyTurnPoint(flight.Points, task, start, finish, i);
-
-                    if (tp == null) {      
-                        turnPoints.push(null);
-                        return;
-                    }
-
-                    if (tp.Time > finish.Time || tp.Time < start.Time) {                       
-                        turnPoints.push(null); 
-                        return;
-                    }
-                    turnPoints.push(tp);                    
-                    return;
-                });
-
+                    if (tp != null && tp.Time < finish.Time && tp.Time > start.Time) {      
+                        turnPoints.push(tp);                         
+                    }                         
+                }
+                        
                 let points = [start, ...turnPoints, finish];               
-                var result = this.calculateFlight(task, points);
-                scorings.push(result);    
-            });
-        });
+                if (points.length == task.TaskPoints.length)
+                {
+                    var result = this.calculateFlight(task, points);
+                    scorings.push(result);    
+                    break;
+                }
+            }
+        }
 
         return scorings.filter(x => x.finished).sort((a, b) => { return a.speed - b.speed }).pop();
     }

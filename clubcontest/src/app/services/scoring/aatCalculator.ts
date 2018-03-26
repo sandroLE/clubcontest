@@ -16,51 +16,48 @@ export class AatCalculator extends TaskCalculator {
 
 
 
-    
+
     public getFlightScoring(flight: IFlight, task: ITask): IFlightScoring {
         var starts = this.getStart(flight.Points, task);
         var finishs = this.getFinish(flight.Points, task)
         var turnpoints = [...task.TaskPoints];
         let scorings: IFlightScoring[] = [];
-        
-        for (let start of starts)
-        {           
+
+        for (let start of starts) {
             var validFinishs = finishs
                 .filter(x => start.Time.getTime() < x.Time.getTime())
-                .sort((a,b) => a.Time.getTime() - b.Time.getTime());
-            
-            for(let finish of validFinishs)            
-            {                   
-                if (scorings.length > 0){
-                    break;
-                }
-                var bestTurnPoints: ILoggerPoint[] = [];
-                
-                for (let i=1; i< task.TaskPoints.length-1 ; i++) {                    
-                    let tp = this.findBestTurnPoint(flight.Points, task, start, finish, i);                    
-                    if (tp == null || tp.Time > finish.Time || tp.Time < start.Time) {
-                        tp = null;
-                    }
-                    bestTurnPoints.push(tp);                    
-                }
+                .sort((a, b) => a.Time.getTime() - b.Time.getTime());
 
-                if (bestTurnPoints.every(x => x != null))
-                {
-                    let points = [start, ...bestTurnPoints, finish];                                
-                    var result = this.calculateFlight(task, points);
-                    scorings.push(result);
+            let earliestFinish: ILoggerPoint;
+            for (let finish of validFinishs) {
+                if (earliestFinish == null) {
+                    var bestTurnPoints: ILoggerPoint[] = [];
+                    for (let i = 1; i < task.TaskPoints.length - 1; i++) {
+                        let tp = this.findBestTurnPoint(flight.Points, task, start, finish, i);
+                        if (tp == null || tp.Time > finish.Time || tp.Time < start.Time) {
+                            tp = null;
+                        }
+                        bestTurnPoints.push(tp);
+                    }
+
+                    if (bestTurnPoints.every(x => x != null)) {
+                        let points = [start, ...bestTurnPoints, earliestFinish || finish];
+                        var result = this.calculateFlight(task, points);
+                        scorings.push(result);
+                        earliestFinish = finish;                        
+                    }
                 }
             }
         }
 
-        
+
         return scorings.sort((a, b) => { return a.speed - b.speed }).pop();
     }
 
 
 
 
-private findBestTurnPoint(points: ILoggerPoint[], task: ITask, start: ILoggerPoint, finish: ILoggerPoint, index: number): ILoggerPoint {
+    private findBestTurnPoint(points: ILoggerPoint[], task: ITask, start: ILoggerPoint, finish: ILoggerPoint, index: number): ILoggerPoint {
 
         var prev: ILoggerPoint
             = index == 1

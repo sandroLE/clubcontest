@@ -8,7 +8,8 @@
 
     <div class="coordinates">
       {{point.Latitude|coord:'N'}} - {{point.Longitude|coord:'E'}}
-      <span *ngIf="point.ObservationZone">({{point.ObservationZone.Type}} {{(point.ObservationZone.Length || point.ObservationZone.Radius) / 1000}}km)</span>
+      <span *ngIf="point.ObservationZone && point.ObservationZone.Type == 'Cylinder'"> (Tonne {{(point.ObservationZone.Radius) / 1000}}km)</span>
+      <span *ngIf="point.ObservationZone && point.ObservationZone.Type == 'Line'"> (Linie {{(point.ObservationZone.Length) / 1000}}km)</span>
     </div>
   </ng-container>
 

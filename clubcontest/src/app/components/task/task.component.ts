@@ -124,8 +124,8 @@ export class TaskComponent {
     this.mapService.showTask(this.task);
   }
 
-  private save() {
-    this.apiService.updateTask(this.dayId, this.task).subscribe((response) => {
+  private save() {   
+    this.apiService.updateTask(this.dayId, this.task).subscribe((response) => {      
       this.isEditorEnabled = false;
       this.mapService.showTask(this.task);
     }, (error) => { alert("task update error!"); console.log(error); });

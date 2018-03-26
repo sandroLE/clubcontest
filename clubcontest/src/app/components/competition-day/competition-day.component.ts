@@ -69,9 +69,12 @@ export class CompetitionDayComponent {
 
   private deleteDay() {
     var url = this.apiService.apiBaseUrl + "/Day/Delete?id=" + this.day.Id;
-    this.http.delete(url).subscribe(() => {
-      this.deleted.emit();
-    });
+
+    if (confirm("Bist du dir sicher?")) {
+      this.http.delete(url).subscribe(() => {
+        this.deleted.emit();
+      });
+    }
   }
 
 
