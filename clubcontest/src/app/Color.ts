@@ -8,7 +8,7 @@ public static get(index:number){
 }
 
   private static colors = [
-    /* 0 Red: */"#e6194b",
+    
     /* 1 Green:*/"#3cb44b",    
     /* 2 Blue:*/ "#0082c8",
     /* 3 Orange:-*/ "#f58231",
@@ -29,6 +29,7 @@ public static get(index:number){
     /* 18 Navy:*/ "#000080",
     /* 19 Grey:*/ "#808080",
     /* 20 White:*/ "#FFFFFF",
-    /* 21 Black:*/ "#000000"
+    /* 21 Black:*/ "#000000",
+    /* 0 Red: */"#e6194b",
   ]
 }

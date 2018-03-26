@@ -1,7 +1,7 @@
 <div class="competition-day">
 	<mat-sidenav-container>
 		<mat-sidenav #sidenav [mode]="'side'" [opened]="!isSideBarHidden">
-			<div >
+			<div>
 				<div class="menu">
 					<ng-container *ngIf="userService.currentUser.isAdmin">
 						<button mat-icon-button [matMenuTriggerFor]="menu">
@@ -32,11 +32,13 @@
 						<app-flight *ngFor="let flight of day?.Flights | orderbyScore; let i=index" [flight]="flight" [task]="day?.XcSoarTask" [selected]="flight.isSelected"
 						 (selectedChange)="selectFlight(flight, $event)" [isLoading]="flight.isLoading" [isExpanded]="flight.isExpanded" (expand)="expandFlight(flight)"
 						 (collapse)="collapseFlight(flight)" (changed)="applyFlightUpdates($event)" (turnpointsChanged)="onTurnpointsChanged($event)"
-						 (delete)="deleteFlight(flight)" [index]="i" [color]="flight.color">
+						 (delete)="deleteFlight(flight)" [index]="i">
 						</app-flight>
 
-
-
+						<div class="select-all" *ngIf="day?.Flights.length > 0">
+							<mat-icon (click)="selectAll()" matTooltip="Alle anzeigen">check_box</mat-icon>
+							<mat-icon (click)="deselectAll()" matTooltip="Alle ausblenden" >check_box_outline_blank</mat-icon>
+						</div>
 
 						<div class="uploadSection">
 							<form>

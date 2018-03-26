@@ -1,8 +1,12 @@
-<div class="flight c{{index}}" [class.selected]="selected" [class.expanded]="isExpanded">
+<div class="flight" [class.selected]="selected" [class.expanded]="isExpanded" [style.border-left-color]="flight.color">
 
 	<div class="headline">
 		<div class="checkbox">
-			<input type="checkbox" [(ngModel)]="selected" />
+			<label [style.color]="flight.color">
+				<input type="checkbox" [(ngModel)]="selected" />
+				<mat-icon *ngIf="selected">check_box</mat-icon>
+				<mat-icon *ngIf="!selected">check_box_outline_blank</mat-icon> 
+			</label>
 		</div>
 
 		<div class="scores">{{flight.Score}} </div>

@@ -14,6 +14,8 @@ import { Observable } from 'rxjs/Observable';
 import 'leaflet-geometryutil';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { ChangeDateDialog } from '../changeDateDialog/changeDate.component';
+import { Color } from '../../Color';
+import { FlightSorter } from '../../pipes/orderby.pipe';
 
 @Component({
   selector: 'app-competition-day',
@@ -89,11 +91,10 @@ export class CompetitionDayComponent {
           this.hasError = true;
         }
         else {
-          this.day.Flights.forEach((f: IFlight, index: number) => {
-            this.flightService.fix(f);
-            f.color = this.getColor(index);
-          });//TODO: move to service or find better solution
+          this.day.Flights.forEach((f: IFlight) => { this.flightService.fix(f); });//TODO: move to service or find better solution
           this.setScores();
+          this.day.Flights = FlightSorter.sort(this.day.Flights);
+          this.day.Flights.forEach((f, i) => f.color = Color.get(i));
           this.mapService.showTask(this.day.XcSoarTask);
         }
       });
@@ -146,7 +147,7 @@ export class CompetitionDayComponent {
       this.isInProgress = false;
       loadedFlight.isLoading = false;
       loadedFlight.isSelected = isSelected;
-      loadedFlight.color = flight.color || "red";
+      loadedFlight.color = flight.color || "black";
       this.replace(loadedFlight);
       this.mapService.clearFlights();
       this.day.Flights.filter(x => x.isSelected).forEach((f, i) => this.mapService.addFlight(f, { color: f.color }));
@@ -154,6 +155,17 @@ export class CompetitionDayComponent {
     });
     return obs;
   }
+
+
+  selectAll(){
+    this.mapService.clearFlights();
+    this.day.Flights.forEach(f => this.selectFlight(f, true));
+  }
+
+  deselectAll(){
+    this.day.Flights.forEach(f => f.isSelected = false);
+  }
+
 
   private initializeSliderValues() {
     var selectedFlights = this.day.Flights.filter(x => x.Points != null && x.Points.length > 0 && x.isSelected);
@@ -168,23 +180,7 @@ export class CompetitionDayComponent {
 
   }
 
-  private getColor(i: number): string {
-    var colors = [];
-    colors[0] = "#00d034";
-    colors[1] = "blueviolet";
-    colors[2] = "blue";
-    colors[3] = "brown";
-    colors[4] = "chocolate";
-    colors[5] = "green";
-    colors[6] = "crimson";
-    colors[7] = "darkorange";
-    colors[8] = "deeppink";
-    colors[9] = "red";
-    colors[10] = "lightseagreen";
-    colors[11] = "coral";
-    colors[12] = "deepskyblue";
-    return colors[i % 13];
-  }
+
 
 
   private replace(newFlight: IFlight) {
@@ -207,7 +203,7 @@ export class CompetitionDayComponent {
 
   private onTurnpointsChanged(flight: IFlight): void {
     this.mapService.clearFlights();
-    this.mapService.addFlight(flight, { color: this.getColor(this.day.Flights.indexOf(flight)), showMarker: true });
+    this.mapService.addFlight(flight, { color: flight.color, showMarker: true });
   }
 
   private applyFlightUpdates(flight: IFlight): void {
@@ -299,7 +295,14 @@ export class CompetitionDayComponent {
       this.mapService.invalidateSize();
     }, 200);
   }
+
+
+
+
 }
+
+
+
 
 declare var moment;
 

@@ -204,3 +204,13 @@ text-shadow:rgba(0, 0, 0, 0.247059) 0px -1px 0px;
     width: 99%;
     margin: 0;
 }
+
+
+.select-all{
+    color: gray;
+    margin: 20px 30px;    
+}
+
+.select-all mat-icon{
+    cursor:pointer;
+}
