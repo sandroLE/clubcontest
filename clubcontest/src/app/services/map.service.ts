@@ -416,7 +416,7 @@ export class MapService {
       task.TaskPoints[i].Longitude = e.latlng.lng;
       task.TaskPoints[i].Name = "Freie Wende";
 
-      if (this.nearTurnPointSnap) {
+      if (this.nearTurnPointSnap) {        
         e.vertex.setLatLng(this.nearTurnPointSnap.latlng);
         task.TaskPoints[i].Latitude = this.nearTurnPointSnap.latlng.lat;
         task.TaskPoints[i].Longitude = this.nearTurnPointSnap.latlng.lng;

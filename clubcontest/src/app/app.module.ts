@@ -29,6 +29,8 @@ import { TaskComponent } from './components/task/task.component';
 import { TotalResultComponent } from './components/total-result/total-result/total-result.component';
 import { TaskPointComponent } from './components/task-point/task-point.component';
 import { ChangeDateDialog } from './components/changeDateDialog/changeDate.component';
+import { TaskEditorService } from './services/taskEditor.service';
+import { CompetitionService } from './services/competition.service';
 
 const appRoutes: Routes = [
   { path: '', component: CreateCompetitionComponent },
@@ -66,7 +68,7 @@ const appRoutes: Routes = [
     , MatSidenavModule, MatSliderModule, MatDialogModule, MatDatepickerModule, MatNativeDateModule, MatTooltipModule
   ],
   exports: [],
-  providers: [MapService, GeoUtilService, TaskScoringService, FlightService, ApiService, UserService],
+  providers: [MapService, GeoUtilService, TaskScoringService, FlightService, ApiService, UserService, TaskEditorService, CompetitionService],
   bootstrap: [AppComponent],
   entryComponents: [ChangeDateDialog]
 })

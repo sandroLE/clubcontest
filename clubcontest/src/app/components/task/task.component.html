@@ -1,3 +1,4 @@
+
 <div class="task">
 
   <div style="display: flex; justify-content: space-between" *ngIf="task?.TaskPoints.length > 0" (click)="collapsed=!collapsed;">
@@ -56,7 +57,9 @@
     </div>
 
     <br>
-    <task-point *ngFor="let p of task?.TaskPoints; index as i" [index]="i" [point]="p" [disabled]="!isEditorEnabled" (change)="onTaskPointChanged($event)"></task-point>
+    <task-point *ngFor="let p of task?.TaskPoints; index as i" [index]="i" [point]="p" [disabled]="!isEditorEnabled" (change)="onTaskPointChanged($event)">
+      <div class="point-button" (click)="snap(i)" *ngIf="isEditorEnabled" matTooltip="Verschieben auf nächstgelegenen Wendepunkt"><mat-icon>gps_fixed</mat-icon></div>
+    </task-point>
 
     <div *ngIf="task == null || task.TaskPoints.length == 0">
       <div *ngIf="userService.currentUser.isAdmin">
@@ -93,9 +96,8 @@
     </div>
 
     <div class="buttons" style="display: flex;" *ngIf="isEditorEnabled">
-      <button mat-raised-button (click)="cancel()" style="margin-right: 5px">Abbrechen</button>
-      <button mat-raised-button color="accent" (click)="save()">
-        <i class="material-icons">save</i> Speichern</button>
+      <button mat-raised-button style="margin-right: 5px;" (click)="cancel()" >Abbrechen</button>
+      <button mat-raised-button color="accent" (click)="save()"><i class="material-icons">save</i> Speichern</button>     
     </div>
   </div>
 </div>

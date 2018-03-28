@@ -166,6 +166,10 @@ export class CompetitionDayComponent {
     this.day.Flights.forEach(f => f.isSelected = false);
   }
 
+  isAnyFlightSelected(){
+    return this.day && this.day.Flights && this.day.Flights.find(x => x.isSelected) != null;
+  }
+
 
   private initializeSliderValues() {
     var selectedFlights = this.day.Flights.filter(x => x.Points != null && x.Points.length > 0 && x.isSelected);

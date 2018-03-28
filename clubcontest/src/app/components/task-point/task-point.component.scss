@@ -1,12 +1,13 @@
 :host{
     margin: 10px 0;
-    display: block;
+    display: flex;
     box-shadow: 0 0 4px 0px #afafaf;
     padding: 5px;
 }
 
 .task-point{  
     margin: 2px;
+    flex-grow: 1;
 }
 
 .coordinates{

@@ -68,10 +68,11 @@
 					<mat-icon>navigate_next</mat-icon>
 				</div>
 
-				<div class="slider" (mouseover)="sliderMouseOver()" (mouseout)="sliderMouseOut()">
+				<div class="slider" *ngIf="isAnyFlightSelected()" (mouseover)="sliderMouseOver()" (mouseout)="sliderMouseOut()">
 					<input type="range" [min]="sliderMinTime" [max]="sliderMaxTime" [(ngModel)]="sliderTime" (input)="sliderChanged()" />
 					<br> {{sliderDisplayTime}}
 				</div>
+				
 
 				<a class="skylines" href="https://skylines.aero/" target="_blank">
 					<div class="skylines-description">Luftraumkarten von:</div>

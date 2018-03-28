@@ -57,3 +57,12 @@ input[type=file]{
 .aat-time mat-form-field{
     width: 100px;
 }
+
+.point-button{
+    cursor: pointer;
+    color:#a2a2a2;
+
+    &:hover{
+        color:#4e4e4e;
+    }
+}

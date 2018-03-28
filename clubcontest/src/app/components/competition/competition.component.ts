@@ -5,6 +5,7 @@ import { ICompetition } from './../../models/competition';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Http, Headers } from '@angular/http';
 import { Component, OnInit } from '@angular/core';
+import { CompetitionService } from '../../services/competition.service';
 
 @Component({
   selector: 'app-competition',
@@ -25,19 +26,19 @@ export class CompetitionComponent implements OnInit {
     , private route: ActivatedRoute
     , public userService: UserService
     , private apiServie: ApiService
-    , private mapService: MapService) {
+    , private mapService: MapService
+    , private competitionService: CompetitionService
+    ) {
 
   }
 
 
   ngOnInit() {
-
     this.route.params.subscribe((params: Params) => {
       var competitionName = params['name'];
-      var url = this.apiServie.apiBaseUrl + `/Competition/Get?name=${competitionName}`
-      this.http.get(url)
+      this.competitionService.getCompetition(competitionName)
         .subscribe((x) => {
-          this.competition = x.json();
+          this.competition = x;
 
           this.showTotals = false;
           this.showSettings = false;
@@ -46,8 +47,6 @@ export class CompetitionComponent implements OnInit {
           if (this.competition == null) {
             this.router.navigate(["/"]);
           }
-
-          this.mapService.parsedWayPoints = this.parseWaypoints(this.competition.Waypoints);
 
           this.userService.isAdmin(this.competition.Id).subscribe(isAdmin => {
             this.userService.currentUser.isAdmin = isAdmin;
@@ -114,50 +113,6 @@ export class CompetitionComponent implements OnInit {
     this.router.navigate(["Competition/", this.competition.Name, "settings"]);
   }
 
-  private parseWaypoints(text: string): { name: string, lat: number, lng: number }[] {
-    try {
-      var result: { name: string, lat: number, lng: number }[] = [];
-
-      if (text == null){
-        return result;
-      }
-
-      var lines = text.split(/\r?\n/);
-      lines.forEach(line => {
-        var wp = this.parseLine(line);
-        if (wp != null) {
-          result.push(wp);
-        }
-      })
-      return result;
-    }
-    catch (exception) {
-      if (this.userService.currentUser.isAdmin) {
-        alert("Wegpunkte konnten nicht geparst werden. Bitte Format prüfen")
-      }
-      return [];
-    }
-  }
-
-  private parseLine(text: string): { name: string, lat: number, lng: number } {
-    try {
-      if (text.indexOf('"') < 0) {
-        return null;
-      }
-      var words = text.split(',');
-      var name = words[0].replace(/"/g, "");
-      var latWord = words[3];
-      var lngWord = words[4];
-      var lat = (+latWord.substr(0, 2)) + (parseFloat(latWord.substr(2, 6)) / 60);
-      var lng = (+lngWord.substr(0, 3)) + (parseFloat(lngWord.substr(3, 6)) / 60);
-
-      if (Number.isNaN(lat) ||Number.isNaN(lng)){
-        return null;
-      }
-      return { name, lat, lng };
-    }
-    catch (exception) {
-      return null;
-    }
-  }
+  
+ 
 }

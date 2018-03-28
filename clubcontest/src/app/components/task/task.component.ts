@@ -5,11 +5,12 @@ import { GeoUtilService } from './../../services/geoUtil.service';
 import { ApiService } from './../../services/api.service';
 import { ITask, ITaskPoint } from './../../models/task';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { TaskEditorService } from '../../services/taskEditor.service';
 
 @Component({
   selector: 'app-task',
   templateUrl: './task.component.html',
-  styleUrls: ['./task.component.css']
+  styleUrls: ['./task.component.scss']
 })
 export class TaskComponent {
 
@@ -22,6 +23,8 @@ export class TaskComponent {
     , private taskScoring: TaskScoringService
     , private userService: UserService
     , private mapService: MapService
+    , private taskEditor: TaskEditorService
+
   ) { }
 
 
@@ -157,8 +160,15 @@ export class TaskComponent {
   }
 
 
-  onTaskPointChanged(){
-    //this.mapService.clearTask();
+  onTaskPointChanged(){    
     this.mapService.showTask(this.task, true);
+  }
+
+  snap(taskPointIndex:number){
+    
+    this.task.TaskPoints[taskPointIndex] = this.taskEditor.snap(this.task.TaskPoints[taskPointIndex]);
+    this.mapService.showTask(this.task, true);
+    this.taskPropertyChanged();
+
   }
 }
