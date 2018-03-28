@@ -1,5 +1,5 @@
 import { ITaskPoint } from './../../models/task';
-import { Component, OnInit, Input, ChangeDetectionStrategy, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy, EventEmitter, Output, HostBinding } from '@angular/core';
 import { Color } from '../../Color';
 
 @Component({
@@ -7,6 +7,7 @@ import { Color } from '../../Color';
   templateUrl: './task-point.component.html',
   styleUrls: ['./task-point.component.scss'],
  // changeDetection: ChangeDetectionStrategy.OnPush
+ 
 })
 export class TaskPointComponent implements OnInit {
 
@@ -62,4 +63,10 @@ export class TaskPointComponent implements OnInit {
   get radius(){
     return this.point.ObservationZone.Radius;
   }
+
+
+  @HostBinding('style.background-color')
+  get backgroundColor(){
+    return this.color + "11";
+  }  
 }

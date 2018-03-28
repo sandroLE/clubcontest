@@ -119,8 +119,7 @@ export class MapService {
       }
       else if (tp.ObservationZone.Type == "Keyhole") {
         //layer = this.createKeyhole(task, index);
-
-        layer = this.createSector(this.map, task, index);
+        layer = this.createSector(this.map, task, index, Color.get(index));
       }
       else {
         throw "not supported observation zone ";
@@ -157,7 +156,7 @@ export class MapService {
   }
 
 
-  private createSector(map: L.Map, task: ITask, index: number) {
+  private createSector(map: L.Map, task: ITask, index: number,color="yellow") {
     //sector direction
     var prev = task.TaskPoints[index - 1];
     var tp = task.TaskPoints[index];
@@ -174,12 +173,12 @@ export class MapService {
     var t2 = LGeometryUtil.destination(t1, direction, 10000);
     var leftPoint: L.LatLng = LGeometryUtil.rotatePoint(map, t2, -45, t1);
     var rightPoint: L.LatLng = LGeometryUtil.rotatePoint(map, t2, +45, t1);
-    var semicircle = this.createKeyhole(task, index);
+    var semicircle = this.createKeyhole(task, index, color);
     return semicircle;
   }
 
 
-  private createKeyhole(task: ITask, index: number): L.Layer {
+  private createKeyhole(task: ITask, index: number, color:string): L.Layer {
     var LGeometryUtil: any = (<any>L).GeometryUtil;
     var prev = task.TaskPoints[index - 1];
     var tp = task.TaskPoints[index];
@@ -193,7 +192,7 @@ export class MapService {
     var s = prevTp.add(tpNext);
     var tpLatLng = L.latLng(tp.Latitude, tp.Longitude);
 
-    var semicircle: any = (<any>L).semiCircle([tp.Latitude, tp.Longitude], { radius: 10000 });
+    var semicircle: any = (<any>L).semiCircle([tp.Latitude, tp.Longitude], { radius: 10000, color:color });
     semicircle.setDirection(s.angleDeg(), 90);
 
 
