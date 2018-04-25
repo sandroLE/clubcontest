@@ -63,6 +63,11 @@ export class CreateCompetitionComponent implements OnInit {
   }
 
   private create(): void {
+
+    if (!this.userService.currentUser.isLoggedIn){
+      alert("Du musst angemeldet sein, bevor du einen neuen Wettbewerb erstellen kannst!");
+      return;
+    }
     var headers = new Headers({
       'Content-Type': 'application/json',
     });
@@ -86,13 +91,10 @@ export class CreateCompetitionComponent implements OnInit {
   }
 
   filterByName(competitions: ICompetition[], name: string): ICompetition[] {
-
     if (!name || name == "") {
       return competitions;
     }
-
     var result = competitions.filter(x => { return x.Name.toLowerCase().indexOf(name.toLowerCase()) >= 0 });
-
     return result;
   }
 
